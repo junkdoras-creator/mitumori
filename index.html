@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>御見積書 作成フォーム｜グロースリンク税理士法人 亀戸オフィス</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f4f9; min-height: 100vh; }
+
+/* ===== FORM ===== */
+#form-view { padding: 16px; max-width: 860px; margin: 0 auto; }
+.header { background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%); color: #fff; border-radius: 12px 12px 0 0; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(26,58,107,.3); }
+.header h1 { font-size: 17px; font-weight: 700; }
+.header small { font-size: 10px; opacity: 0.7; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+.card { background: #fff; border-radius: 0 0 12px 12px; padding: 24px 20px 28px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+
+.section-title { font-size: 13px; font-weight: 700; color: #1a3a6b; border-left: 4px solid #2a5298; padding-left: 10px; margin: 24px 0 14px; letter-spacing: 0.3px; }
+.section-title:first-child { margin-top: 0; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 8px; }
+.span2 { grid-column: 1 / -1; }
+@media (max-width: 500px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .grid3 { grid-template-columns: 1fr; }
+  .header h1 { font-size: 15px; }
+  .card { padding: 16px 14px 20px; }
+  .preview-btn-wrap button { font-size: 14px; padding: 12px 20px; }
+}
+
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; color: #666; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; }
+input:not([type=checkbox]), select, textarea {
+  width: 100%; border: 1px solid #b8c4d8; border-radius: 6px;
+  padding: 9px 10px; font-size: 14px;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif;
+  background: #fffef0; outline: none; -webkit-appearance: none;
+}
+/* 自動計算・読み取り専用はグレー */
+input[readonly] {
+  background: #f0f0f0 !important; color: #999; cursor: not-allowed;
+}
+/* 記帳代行のインライン select（小さいもの）も黄色 */
+input[type=checkbox] { -webkit-appearance: checkbox; appearance: checkbox; width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; accent-color: #1a3a6b; }
+input:not([readonly]):focus, select:focus, textarea:focus { border-color: #e6a800; box-shadow: 0 0 0 2px rgba(230,168,0,.2); background: #fffbe6; }
+textarea { min-height: 120px; resize: vertical; }
+input[type=number] { text-align: right; }
+
+/* ===== 明細グループ ===== */
+.item-group { background: #f7f9fc; border: 1px solid #dde3ee; border-radius: 10px; padding: 16px 14px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.group-no { background: #1a3a6b; color: #fff; border-radius: 4px; padding: 3px 12px; font-size: 12px; font-weight: 700; }
+.group-btns { display: flex; gap: 6px; }
+.icon-btn { border: none; border-radius: 4px; width: 32px; height: 32px; font-weight: 700; font-size: 15px; cursor: pointer; }
+.icon-btn.up   { background: #e8edf5; color: #1a3a6b; }
+.icon-btn.down { background: #e8edf5; color: #1a3a6b; }
+.icon-btn.del  { background: #fdecea; color: #c62828; }
+.icon-btn:disabled { background: #eee; color: #bbb; cursor: default; }
+
+/* メイン行 */
+.main-row { border-bottom: 1px dashed #dde3ee; padding-bottom: 10px; margin-bottom: 10px; }
+
+/* サブ行 */
+.sub-rows { }
+.sub-row { background: #fff; border: 1px solid #e5e9f2; border-radius: 6px; padding: 10px 10px 6px; margin-bottom: 8px; position: relative; }
+.sub-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.sub-label { font-size: 11px; color: #888; font-weight: 700; }
+.sub-del-btn { background: #fdecea; color: #c62828; border: none; border-radius: 4px; width: 26px; height: 26px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.sub-amount { text-align: right; font-size: 12px; color: #555; font-weight: 600; margin-top: 4px; }
+.sub-amount.negative { color: #c62828; }
+
+.add-sub-btn { background: #e8f5e9; color: #2e7d32; border: 1px dashed #81c784; border-radius: 6px; width: 100%; padding: 7px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+.group-total { text-align: right; font-size: 13px; color: #1a3a6b; font-weight: 700; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dde3ee; }
+
+/* 合計 */
+.total-box { background: linear-gradient(135deg,#f0f4f9,#e8edf5); border-radius: 10px; padding: 16px 20px; border: 1px solid #dde3ee; }
+.total-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; color: #444; }
+.total-row span:last-child { font-weight: 600; color: #222; }
+.grand-total { border-top: 2px solid #1a3a6b; margin-top: 10px; padding-top: 12px; display: flex; justify-content: space-between; font-size: 20px; font-weight: 700; color: #1a3a6b; }
+
+/* ボタン */
+.btn { border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; }
+.btn-navy  { background: #1a3a6b; color: #fff; }
+.btn-green { background: #2e7d32; color: #fff; width: 100%; margin-top: 6px; padding: 11px; }
+.btn-gray  { background: #555; color: #fff; }
+.btn-white { background: #fff; color: #1a3a6b; }
+.preview-btn-wrap { display: flex; justify-content: flex-end; margin-top: 20px; }
+/* ===== 備考チェックボックス ===== */
+.remarks-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.remark-item { display: flex; align-items: flex-start; gap: 10px; background: #f7f9fc; border: 1px solid #dde3ee; border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: background .15s; }
+.remark-item:hover { background: #eef2fa; }
+.remark-item.checked { background: #e8f0fe; border-color: #1a3a6b; }
+.remark-item input[type=checkbox] { margin-top: 2px; }
+.remark-text { font-size: 12px; line-height: 1.7; color: #333; white-space: pre-wrap; flex: 1; }
+.remark-item.checked .remark-text { color: #1a3a6b; }
+.remark-move-btns { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+.remark-move-btn { background: #e8edf5; border: none; border-radius: 4px; width: 26px; height: 22px; font-size: 12px; font-weight: 700; color: #1a3a6b; cursor: pointer; }
+.remark-move-btn:disabled { background: #f0f0f0; color: #bbb; cursor: default; }
+.remark-move-btn:hover:not(:disabled) { background: #1a3a6b; color: #fff; }
+.remark-edit-btn { background: none; border: 1px solid #ccd3e0; border-radius: 5px; padding: 3px 9px; font-size: 11px; color: #666; cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+.remark-edit-btn:hover { background: #e8edf5; color: #1a3a6b; border-color: #1a3a6b; }
+.remark-edit-area { display: none; flex-direction: column; gap: 6px; width: 100%; margin-top: 6px; }
+.remark-edit-area.open { display: flex; }
+.remark-edit-area textarea { min-height: 80px; font-size: 12px; padding: 7px 9px; resize: vertical; border-color: #1a3a6b; }
+.remark-edit-actions { display: flex; gap: 6px; }
+.remark-edit-actions button { border: none; border-radius: 5px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.btn-apply { background: #1a3a6b; color: #fff; }
+.btn-cancel-edit { background: #eee; color: #444; }
+.remarks-preview-label { font-size: 11px; color: #888; margin-bottom: 6px; }
+#remarks-preview { background: #f0f4f9; border-radius: 6px; padding: 10px 12px; font-size: 11px; color: #444; white-space: pre-wrap; line-height: 1.8; min-height: 40px; border: 1px solid #dde3ee; }
+
+/* ===== 操作ガイド ===== */
+.guide-banner { background: #fffef0; border: 1px solid #e6c800; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; color: #5d4037; line-height: 1.9; }
+.guide-banner strong { color: #1a3a6b; }
+.guide-steps { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.guide-step { background: linear-gradient(135deg,#1a3a6b,#2a5298); color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 4px rgba(26,58,107,.2); }
+.guide-step span { opacity: 0.7; margin-right: 4px; }
+
+.draft-bar { background: linear-gradient(to right, #e8edf5, #f0f4f9); padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #ccd3e0; }
+.draft-bar select { width: auto; flex: 1; min-width: 150px; font-size: 13px; padding: 7px 10px; border-radius: 6px; border: 1px solid #ccd3e0; background: #fff !important; }
+.draft-bar .dbtn { border: none; border-radius: 6px; padding: 7px 13px; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.dbtn-save   { background: linear-gradient(135deg,#1a3a6b,#2a5298); color: #fff; }
+.dbtn-new    { background: #2e7d32; color: #fff; }
+.dbtn-del    { background: #fdecea; color: #c62828; }
+.draft-label { font-size: 12px; color: #555; font-weight: 700; white-space: nowrap; }
+.autosave-note { font-size: 11px; color: #999; margin-left: auto; white-space: nowrap; }
+#save-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1a3a6b; color: #fff; padding: 10px 28px; border-radius: 24px; font-size: 13px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .35s; z-index: 9999; }
+
+/* ===== PREVIEW ===== */
+#preview-view { display: none; padding: 16px; max-width: 860px; margin: 0 auto; }
+.preview-actions { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-start; }
+.preview-left-btns { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
+.mail-gen-area { background: #f0f4ff; border: 1px solid #c5d0e8; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 6px; min-width: 240px; flex: 1; }
+.mail-gen-title { font-size: 13px; font-weight: 700; color: #1a3a6b; margin-bottom: 4px; }
+.copy-btn { background: #e8edf5; border: none; border-radius: 6px; width: 34px; height: 34px; font-size: 15px; cursor: pointer; flex-shrink: 0; }
+.copy-btn:hover { background: #1a3a6b; color: #fff; }
+.btn-copy-body { background: linear-gradient(135deg,#1a3a6b,#2a5298); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; flex: 1; }
+.btn-copy-body:hover { opacity: 0.9; }
+.copy-toast { background: #1a7340; color: #fff; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 700; text-align: center; margin-top: 4px; }
+.mail-editor-toggle { background: none; border: 1px solid #ccd3e0; border-radius: 5px; padding: 4px 12px; font-size: 11px; color: #555; cursor: pointer; }
+.mail-editor-toggle:hover { background: #eee; }
+
+.quote-paper { background: #fff; border-radius: 8px; padding: 28px 28px 32px; box-shadow: 0 2px 12px rgba(0,0,0,.1); font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS Mincho', serif; color: #111; }
+.quote-paper h2 { text-align: center; font-size: 20px; letter-spacing: 1em; margin-bottom: 22px; }
+.quote-top { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.quote-client-block {}
+.quote-client { font-size: 16px; font-weight: bold; border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 10px; display: inline-block; min-width: 220px; }
+.quote-meta div { font-size: 11px; line-height: 2; }
+.quote-sender { font-size: 10px; line-height: 1.9; min-width: 190px; text-align: right; }
+.quote-sender .sender-name { font-size: 13px; font-weight: bold; }
+
+.total-banner { background: #1a3a6b; color: #fff; padding: 11px 18px; font-size: 15px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 14px; border-radius: 4px; }
+
+table.items { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 14px; }
+table.items th, table.items td { border: 1px solid #888; padding: 5px 6px; }
+table.items thead tr { background: #e8edf5; font-weight: bold; }
+table.items .r { text-align: right; }
+table.items .c { text-align: center; }
+.subtotal-row td { background: #e8edf5; font-weight: bold; }
+.grand-row td { background: #1a3a6b; color: #fff; font-weight: bold; }
+.sub-item-row td { background: #fafafa; font-size: 10.5px; color: #444; }
+.discount-row td { color: #c00; font-size: 10.5px; background: #fff9f9; }
+
+.remarks-box { border: 1px solid #aaa; padding: 10px 14px; font-size: 10px; line-height: 1.9; white-space: pre-wrap; border-radius: 4px; margin-top: 2px; }
+.remarks-label { font-weight: bold; margin-bottom: 6px; font-size: 12px; margin-top: 14px; }
+
+@media print {
+  body { background: #fff; }
+  #form-view { display: none !important; }
+  #preview-view { display: block !important; padding: 0; max-width: 100%; }
+  .preview-actions { display: none !important; }
+  .quote-paper { box-shadow: none; border-radius: 0; padding: 16px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 編集フォーム ===== -->
+<div id="form-view">
+  <div class="header">
+    <div>
+      <small>GROWTHLINK TAX ACCOUNTING CORPORATION</small>
+      <h1>御見積書　作成フォーム</h1>
+    </div>
+    <button class="btn btn-white" onclick="showPreview()">👁 確認・印刷</button>
+  </div>
+
+  <!-- 下書きバー -->
+  <div class="draft-bar">
+    <span class="draft-label">📂 保存済み下書き：</span>
+    <select id="draft-select"></select>
+    <button class="dbtn dbtn-save" style="background:#4a6fa5;" onclick="loadDraft(document.getElementById('draft-select').value)" title="選択した下書きを読み込みます">📂 読み込む</button>
+    <button class="dbtn dbtn-save" onclick="saveDraft()" title="入力内容をこのブラウザに保存します">💾 保存</button>
+    <button class="dbtn dbtn-new"  onclick="newDraft()" title="新しい見積書を白紙から作成します">＋ 新規作成</button>
+    <button class="dbtn dbtn-del"  onclick="deleteDraft()" title="選択中の下書きを削除します">🗑 削除</button>
+    <span class="autosave-note" id="autosave-note">─</span>
+  </div>
+
+  <div class="card">
+
+    <!-- 操作ガイド -->
+    <div class="guide-banner">
+      <strong>📋 作成の流れ</strong>
+      <div class="guide-steps">
+        <div class="guide-step"><span>①</span>宛先・担当者を入力</div>
+        <div class="guide-step"><span>②</span>各項目の単価を確認・変更</div>
+        <div class="guide-step"><span>③</span>備考の要否を選択</div>
+        <div class="guide-step"><span>④</span>💾 保存</div>
+        <div class="guide-step"><span>⑤</span>👁 確認・印刷/PDF保存</div>
+        <div class="guide-step"><span>⑥</span>✉️ メール文をコピーして送信</div>
+      </div>
+    </div>
+
+    <!-- ① 宛先 -->
+    <div class="section-title">① 宛先・案件情報　<span style="font-weight:400;font-size:11px;color:#888;">※ 宛先・件名・担当者名を入力してください</span></div>
+    <div class="grid3">
+      <div class="field">
+        <label>宛先（会社名・屋号）</label>
+        <input id="clientName" type="text" placeholder="合同会社〇〇">
+      </div>
+      <div class="field">
+        <label>お客様担当者名</label>
+        <input id="clientContact" type="text" placeholder="例：山田 太郎">
+      </div>
+      <div class="field">
+        <label>見積日</label>
+        <input id="quoteDate" type="text">
+      </div>
+      <div class="field span2" style="grid-column:1/-1;">
+        <label>件名</label>
+        <input id="subject" type="text" value="税務顧問契約" placeholder="税務顧問契約">
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="field">
+        <label>支払条件</label>
+        <input id="paymentTerms" type="text" placeholder="月末締め翌月末払い">
+      </div>
+      <div class="field">
+        <label>納期</label>
+        <input id="deliveryTerms" type="text" value="別途ご相談">
+      </div>
+      <div class="field">
+        <label>有効期限</label>
+        <input id="validPeriod" type="text" value="御見積後2週間">
+      </div>
+    </div>
+    <div class="field">
+      <label>担当者名</label>
+      <input id="staff" type="text" placeholder="例：小宮　田中">
+    </div>
+
+    <!-- ② 明細 -->
+    <div class="section-title">② 明細項目　<span style="font-weight:400;font-size:11px;color:#888;">※ 各項目の単価・数量を確認・編集してください</span></div>
+    <div id="groups-container"></div>
+    <button class="btn btn-green" onclick="addGroup()" style="background:#5c8a5c;font-size:12px;padding:8px;">＋ 大項目を追加（通常は不要）</button>
+
+    <!-- ③ 合計 -->
+    <div class="section-title">③ 合計　<span style="font-weight:400;font-size:11px;color:#888;">※ 自動計算されます</span></div>
+    <div class="total-box">
+      <div class="total-row"><span>小計（税抜）</span><span id="subtotal-disp">¥0</span></div>
+      <div class="total-row"><span>消費税（10%）</span><span id="tax-disp">¥0</span></div>
+      <div class="grand-total"><span>合計金額（税込）</span><span id="total-disp">¥0</span></div>
+    </div>
+
+    <!-- ④ 備考 -->
+    <div class="section-title">④ 備考　<span style="font-weight:400;font-size:11px;color:#888;">※ 見積書に含める文章にチェックを入れてください</span></div>
+    <div class="remarks-list" id="remarks-checklist"></div>
+    <div class="remarks-preview-label">📄 見積書に出力される備考（チェックONの項目のみ反映）</div>
+    <div id="remarks-preview" style="color:#aaa;font-style:italic;">（チェックなし）</div>
+
+    <div class="preview-btn-wrap">
+      <button class="btn btn-navy" style="padding:14px 40px;font-size:15px;width:100%;border-radius:10px;box-shadow:0 4px 12px rgba(26,58,107,.3);letter-spacing:0.5px;" onclick="showPreview()">👁　見積書を確認・PDF保存する →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プレビュー ===== -->
+<div id="preview-view">
+  <div class="preview-actions">
+    <div class="preview-left-btns">
+      <button class="btn btn-gray" onclick="showForm()">← 編集に戻る</button>
+      <button class="btn btn-navy" onclick="window.print()">🖨 印刷 / PDF保存</button>
+    </div>
+    <div class="mail-gen-area">
+      <div class="mail-gen-title">✉️ メール文を生成する</div>
+      <div class="field" style="margin-bottom:6px;">
+        <label>件名</label>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input type="text" id="mail-subject" style="flex:1;">
+          <button class="copy-btn" onclick="copyText('mail-subject')" title="件名をコピー">📋</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:6px;">
+        <label>本文（自由に編集できます）</label>
+        <textarea id="mail-body" style="min-height:180px;font-size:12px;line-height:1.8;"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-copy-body" onclick="copyMailBody()">📋 本文をコピー</button>
+        <button class="mail-editor-toggle" type="button" onclick="resetMailBody()">↩ テンプレートに戻す</button>
+      </div>
+      <div id="copy-toast" class="copy-toast" style="display:none;">✅ コピーしました！</div>
+    </div>
+  </div>
+  <div class="quote-paper" id="quote-paper"></div>
+</div>
+
+<script>
+// ===== データ構造 =====
+// groups = [ { id, description, subRows: [ { id, description, isDiscount, quantity, unit, unitPrice, autoCalc } ] } ]
+// autoCalc: 'kensan_hojin' | 'kensan_shohi' | 'discount_nendo' | null
+
+const UNITS = ["式","ヶ月","個","時間","日","件"];
+
+// 固定ID（連動計算で参照）
+const ID_KOMONRYO   = 101; // 税務顧問料の本体行
+const ID_DISCOUNT   = 102; // 税務顧問料の値引き行
+const ID_KENSAN_H   = 301; // 決算申告料(法人税)
+const ID_KENSAN_S   = 302; // 決算申告料(消費税)
+
+let groups = [
+  { id:1, description:"税務顧問料", subRows:[
+    { id:ID_KOMONRYO, description:"税務顧問料", isDiscount:false, quantity:12, unit:"ヶ月", unitPrice:30000, autoCalc:null },
+    { id:ID_DISCOUNT, description:"お値引き（面談年2回まで）", isDiscount:true, quantity:12, unit:"ヶ月", unitPrice:15000, autoCalc:'discount_nendo' },
+  ]},
+  { id:2, description:"記帳代行料", subRows:[
+    { id:201, description:"記帳代行料", isDiscount:false, quantity:12, unit:"ヶ月", unitPrice:0, autoCalc:'kichou', kichouMode:'nashi' },
+  ]},
+  { id:3, description:"決算申告料", subRows:[
+    { id:ID_KENSAN_H, description:"決算申告料(法人税)", isDiscount:false, quantity:1, unit:"式", unitPrice:180000, autoCalc:'kensan_hojin' },
+    { id:ID_KENSAN_S, description:"決算申告料(消費税)", isDiscount:false, quantity:1, unit:"式", unitPrice:60000, autoCalc:'kensan_shohi' },
+    { id:303, description:"お値引き（消費税申告無しの場合）", isDiscount:true, quantity:1, unit:"式", unitPrice:60000, autoCalc:null },
+  ]},
+  { id:4, description:"年末調整、法定調書、償却資産", subRows:[
+    { id:401, description:"年末調整、法定調書、償却資産", isDiscount:false, quantity:1, unit:"式", unitPrice:30000, autoCalc:null },
+  ]},
+];
+let nextGid = 5, nextSid = 500;
+
+// 備考マスター（■ごとの文章リスト）
+const REMARK_MASTER = [
+  { id:'r1', text:'■面談はオンライン、来社を基本としますが、現地対応が必要な場合には\n　別途訪問加算１万円（１訪問当たり）と交通費実費のご請求をさせていただきます。', checked:true },
+  { id:'r2', text:'■記帳代行は仕訳数によっては別途見積りをいたします。', checked:true },
+  { id:'r3', text:'■売上規模の著しい増加や施設数に変動があった場合には報酬改定させていただきますので\n　ご了承ください。', checked:true },
+  { id:'r4', text:'■個人確定申告の報酬は含みません。', checked:true },
+  { id:'r5', text:'■面談数に応じて下記の金額をお値引きいたします。\n　●各月：▲60,000円（5,000円/月）\n　●四半期面談：▲120,000円（10,000/月）', checked:false },
+  { id:'r6', text:'■年末調整償却資産税法定調書をご依頼の場合には、下記算式により別途報酬をいただきます。\n　●法定調書作成業務に係る報酬の額は以下の通りとします\n　　源泉徴収票以外の支払調書の提出件数1件当たり2,000円。\n　　報酬等の支払先の特定個人情報書類を乙が保管する場合、1人当たり年間1,000円。\n　　上記支払調書の提出件数に応じた報酬が10,000円に満たない場合、10,000円とします。\n　●償却資産税申告業務に係る報酬の額は以下の通りとします\n　　申告資産数100件までは、20件ごとに8,000円。100件以上は20件ごとに5,000円。\n　　申告書の提出先市町村が複数ある場合、提出先が1ヶ所増えるごとに10,000円。\n　　上記金額が10,000円に満たない場合、10,000円とします。', checked:false },
+];
+let remarkItems = REMARK_MASTER.map(r=>({...r}));
+
+function renderRemarks(){
+  const list = document.getElementById('remarks-checklist');
+  list.innerHTML = '';
+  remarkItems.forEach((item, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'remark-item' + (item.checked ? ' checked' : '');
+    div.style.flexWrap = 'wrap';
+    const isFirst = (idx === 0);
+    const isLast  = (idx === remarkItems.length - 1);
+    div.innerHTML = `
+      <div class="remark-move-btns">
+        <button class="remark-move-btn" onclick="moveRemark(${idx},-1)" type="button" ${isFirst?'disabled':''}>↑</button>
+        <button class="remark-move-btn" onclick="moveRemark(${idx}, 1)" type="button" ${isLast ?'disabled':''}>↓</button>
+      </div>
+      <input type="checkbox" id="chk-${item.id}" ${item.checked?'checked':''} onchange="toggleRemark('${item.id}',this.checked)">
+      <label for="chk-${item.id}" class="remark-text">${escHtml(item.text)}</label>
+      <button class="remark-edit-btn" onclick="openRemarkEdit('${item.id}')" type="button">✏️ 編集</button>
+      <div class="remark-edit-area" id="edit-area-${item.id}">
+        <textarea id="edit-ta-${item.id}">${escHtml(item.text)}</textarea>
+        <div class="remark-edit-actions">
+          <button class="btn-apply" onclick="applyRemarkEdit('${item.id}')" type="button">確定</button>
+          <button class="btn-cancel-edit" onclick="closeRemarkEdit('${item.id}')" type="button">キャンセル</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+  updateRemarksPreview();
+}
+
+function openRemarkEdit(id){
+  const area = document.getElementById('edit-area-'+id);
+  const ta   = document.getElementById('edit-ta-'+id);
+  // textareaの値をHTMLエンティティでなく生テキストで設定
+  const item = remarkItems.find(r=>r.id===id);
+  if(item) ta.value = item.text;
+  area.classList.add('open');
+  ta.focus();
+}
+
+function closeRemarkEdit(id){
+  document.getElementById('edit-area-'+id).classList.remove('open');
+}
+
+function moveRemark(idx, dir){
+  const n = [...remarkItems];
+  const swap = idx + dir;
+  if(swap < 0 || swap >= n.length) return;
+  [n[idx], n[swap]] = [n[swap], n[idx]];
+  remarkItems = n;
+  renderRemarks();
+}
+
+function applyRemarkEdit(id){
+  const ta = document.getElementById('edit-ta-'+id);
+  const newText = ta.value;
+  remarkItems = remarkItems.map(r=>r.id===id?{...r,text:newText}:r);
+  closeRemarkEdit(id);
+  renderRemarks();  // ラベルを更新するため再描画
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function toggleRemark(id, checked){
+  remarkItems = remarkItems.map(r=>r.id===id?{...r,checked}:r);
+  // カードのクラスだけ更新（再描画不要）
+  const div = document.querySelector(`#chk-${id}`)?.closest('.remark-item');
+  if(div) div.className = 'remark-item' + (checked?' checked':'');
+  updateRemarksPreview();
+}
+
+function updateRemarksPreview(){
+  const selected = remarkItems.filter(r=>r.checked).map(r=>r.text).join('\n');
+  const el = document.getElementById('remarks-preview');
+  el.textContent = selected || '（チェックなし）';
+  el.style.cssText = selected ? 'color:#444;font-style:normal;' : 'color:#aaa;font-style:italic;';
+}
+
+function getSelectedRemarks(){
+  return remarkItems.filter(r=>r.checked).map(r=>r.text).join('\n');
+}
+
+// デフォルト値（新規作成時のリセット用）
+const defaultRemarks = null; // 備考はremarkItemsで管理
+const defaultGroups = [
+  { id:1, description:"税務顧問料", subRows:[
+    { id:101, description:"税務顧問料", isDiscount:false, quantity:12, unit:"ヶ月", unitPrice:30000, autoCalc:null },
+    { id:102, description:"お値引き（面談年2回まで）", isDiscount:true, quantity:12, unit:"ヶ月", unitPrice:15000, autoCalc:'discount_nendo' },
+  ]},
+  { id:2, description:"記帳代行料", subRows:[
+    { id:201, description:"記帳代行料", isDiscount:false, quantity:12, unit:"ヶ月", unitPrice:0, autoCalc:'kichou', kichouMode:'nashi' },
+  ]},
+  { id:3, description:"決算申告料", subRows:[
+    { id:ID_KENSAN_H, description:"決算申告料(法人税)", isDiscount:false, quantity:1, unit:"式", unitPrice:180000, autoCalc:'kensan_hojin' },
+    { id:ID_KENSAN_S, description:"決算申告料(消費税)", isDiscount:false, quantity:1, unit:"式", unitPrice:60000, autoCalc:'kensan_shohi' },
+    { id:303, description:"お値引き（消費税申告無しの場合）", isDiscount:true, quantity:1, unit:"式", unitPrice:60000, autoCalc:null },
+  ]},
+  { id:4, description:"年末調整、法定調書、償却資産", subRows:[
+    { id:401, description:"年末調整、法定調書、償却資産", isDiscount:false, quantity:1, unit:"式", unitPrice:30000, autoCalc:null },
+  ]},
+];
+
+// 値引き摘要 → 値引き単価のマップ
+const DISCOUNT_MAP = {
+  "お値引き（面談年6回まで）": 5000,
+  "お値引き（面談年4回まで）": 10000,
+  "お値引き（面談年2回まで）": 15000,
+};
+
+// 連動計算：税務顧問料の単価を取得
+function getKomonUnitPrice(){
+  for(const g of groups){
+    const r = g.subRows.find(r=>r.id===ID_KOMONRYO);
+    if(r) return Number(r.unitPrice)||0;
+  }
+  return 0;
+}
+
+// 連動計算を全グループに反映
+function applyAutoCalc(){
+  const komon = getKomonUnitPrice();
+  groups = groups.map(g=>({
+    ...g,
+    subRows: g.subRows.map(r=>{
+      if(!r.autoCalc) return r;
+      if(r.autoCalc === 'kensan_hojin') return {...r, unitPrice: komon * 6};
+      if(r.autoCalc === 'kensan_shohi') return {...r, unitPrice: komon * 2};
+      if(r.autoCalc === 'discount_nendo'){
+        const mapped = DISCOUNT_MAP[r.description];
+        if(mapped !== undefined) return {...r, unitPrice: mapped};
+      }
+      if(r.autoCalc === 'kichou'){
+        const price = (r.kichouMode === 'ari') ? komon : 0;
+        return {...r, unitPrice: price};
+      }
+      return r;
+    })
+  }));
+}
+
+// 今日の日付セット
+const t = new Date();
+document.getElementById("quoteDate").value = `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
+
+function fmt(n){ return Math.abs(Number(n)).toLocaleString("ja-JP"); }
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function sign(row){ return row.isDiscount ? -1 : 1; }
+function rowAmount(row){ return sign(row) * (Number(row.quantity)||0) * (Number(row.unitPrice)||0); }
+function groupTotal(g){ return g.subRows.reduce((s,r)=>s+rowAmount(r),0); }
+
+function calcTotals(){
+  const sub = groups.reduce((s,g)=>s+groupTotal(g),0);
+  const tax = Math.floor(sub*0.1);
+  const total = sub+tax;
+  document.getElementById("subtotal-disp").textContent = "¥"+sub.toLocaleString("ja-JP");
+  document.getElementById("tax-disp").textContent = "¥"+tax.toLocaleString("ja-JP");
+  document.getElementById("total-disp").textContent = "¥"+total.toLocaleString("ja-JP");
+  return {sub,tax,total};
+}
+
+// ===== フォーム描画 =====
+function renderGroups(){
+  const c = document.getElementById("groups-container");
+  c.innerHTML = "";
+  groups.forEach((g, gIdx)=>{
+    const upDis  = gIdx===0 ? "disabled" : "";
+    const downDis= gIdx===groups.length-1 ? "disabled" : "";
+    const gt = groupTotal(g);
+    const gtStr = (gt<0 ? "−¥"+fmt(gt) : "¥"+fmt(gt));
+
+    const div = document.createElement("div");
+    div.className = "item-group";
+
+    // サブ行HTML
+    let subHtml = "";
+    g.subRows.forEach((row,rIdx)=>{
+      const amt = rowAmount(row);
+      const amtStr = (row.isDiscount ? "−¥"+fmt(amt) : "¥"+fmt(amt));
+      const amtCls = row.isDiscount ? "sub-amount negative" : "sub-amount";
+      const unitOpts = UNITS.map(u=>`<option${u===row.unit?" selected":""}>${u}</option>`).join("");
+      const discChecked = row.isDiscount ? "checked" : "";
+
+      // 摘要欄
+      let descField = "";
+      if(row.autoCalc === 'discount_nendo'){
+        const discOpts = Object.keys(DISCOUNT_MAP).map(k=>`<option${k===row.description?" selected":""}>${k}</option>`).join("");
+        descField = `<select onchange="updateSub(${g.id},${row.id},'description',this.value)">${discOpts}</select>`;
+      } else if(row.autoCalc === 'kichou'){
+        const modeAri  = row.kichouMode==='ari'  ? 'selected' : '';
+        const modeNashi= row.kichouMode==='nashi' ? 'selected' : '';
+        descField = `
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:13px;font-weight:600;">記帳代行料</span>
+            <select style="width:auto;padding:6px 10px;font-size:13px;background:#fffef0;" onchange="updateSub(${g.id},${row.id},'kichouMode',this.value)">
+              <option value="nashi" ${modeNashi}>記帳代行なし（0円）</option>
+              <option value="ari"   ${modeAri}>記帳代行あり（税務顧問料と同額）</option>
+            </select>
+            ${row.kichouMode==='ari' ? `<span style="font-size:12px;color:#1a3a6b;font-weight:700;">→ ¥${Number(row.unitPrice).toLocaleString('ja-JP')}/月</span>` : ''}
+          </div>`;
+      } else {
+        descField = `<input type="text" value="${esc(row.description)}" oninput="updateSub(${g.id},${row.id},'description',this.value)">`;
+      }
+
+      // 自動計算バッジ・単価入力
+      const isAutoKensan = (row.autoCalc === 'kensan_hojin' || row.autoCalc === 'kensan_shohi');
+      const isAutoKichou = (row.autoCalc === 'kichou');
+      const autoBadge = isAutoKensan
+        ? `<span style="background:#fff3cd;color:#856404;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:6px;">🔗 税務顧問料から自動計算（変更不可）</span>`
+        : isAutoKichou
+        ? `<span style="background:#e8f5e9;color:#2e7d32;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:6px;">🔗 記帳代行</span>`
+        : "";
+      const unitPriceInput = (isAutoKensan || (isAutoKichou && row.kichouMode==='ari'))
+        ? `<input type="number" value="${row.unitPrice}" readonly style="background:#f5f5f5;color:#888;text-align:right;">`
+        : `<input type="number" value="${row.unitPrice}" oninput="updateSub(${g.id},${row.id},'unitPrice',this.value)">`;
+
+      subHtml += `
+        <div class="sub-row" id="sub-${row.id}">
+          <div class="sub-row-header">
+            <span class="sub-label">${row.isDiscount ? "🔻 値引き行（マイナス計算）" : "📋 明細行"}${autoBadge}</span>
+            <button class="sub-del-btn" onclick="removeSubRow(${g.id},${row.id})">×</button>
+          </div>
+          <div class="grid2">
+            <div class="field span2">
+              <label>${row.autoCalc==='kichou' ? '記帳代行' : '摘要'}</label>
+              ${descField}
+            </div>
+          </div>
+          ${row.autoCalc==='kichou' && row.kichouMode==='ari' ? `
+          <div class="grid3">
+            <div class="field">
+              <label>数量</label>
+              <input type="number" value="${row.quantity}" oninput="updateSub(${g.id},${row.id},'quantity',this.value)">
+            </div>
+            <div class="field">
+              <label>単位</label>
+              <select onchange="updateSub(${g.id},${row.id},'unit',this.value)">${unitOpts}</select>
+            </div>
+            <div class="field">
+              <label>単価（税抜）</label>
+              ${unitPriceInput}
+            </div>
+          </div>` : row.autoCalc==='kichou' ? `` : `
+          <div class="grid3">
+            <div class="field">
+              <label>数量</label>
+              <input type="number" value="${row.quantity}" oninput="updateSub(${g.id},${row.id},'quantity',this.value)">
+            </div>
+            <div class="field">
+              <label>単位</label>
+              <select onchange="updateSub(${g.id},${row.id},'unit',this.value)">${unitOpts}</select>
+            </div>
+            <div class="field">
+              <label>${row.isDiscount ? "値引額（税抜）" : "単価（税抜）"}</label>
+              ${unitPriceInput}
+            </div>
+          </div>`}
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+            <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer;color:#555;">
+              <input type="checkbox" ${discChecked} onchange="updateSub(${g.id},${row.id},'isDiscount',this.checked)" style="width:auto;">
+              この行をマイナス（値引き）として計算する
+            </label>
+            <div class="${amtCls}" id="amt-${row.id}">${amtStr}</div>
+          </div>
+        </div>`;
+    });
+
+    div.innerHTML = `
+      <div class="group-header">
+        <div class="group-no">大項目 ${gIdx+1}</div>
+        <div class="group-btns">
+          <button class="icon-btn up"   ${upDis}   onclick="moveGroup(${gIdx},-1)">↑</button>
+          <button class="icon-btn down" ${downDis}  onclick="moveGroup(${gIdx},1)">↓</button>
+          <button class="icon-btn del"             onclick="removeGroup(${g.id})">×</button>
+        </div>
+      </div>
+      <div class="main-row">
+        <div class="field" style="margin-bottom:0">
+          <label>大項目名（見出し）</label>
+          <input type="text" value="${esc(g.description)}" oninput="updateGroup(${g.id},'description',this.value)" placeholder="例：税務顧問料">
+        </div>
+      </div>
+      <div class="sub-rows">${subHtml}</div>
+      <button class="add-sub-btn" onclick="addSubRow(${g.id})">＋ 行を追加する（値引き行として設定することも可能）</button>
+      <div class="group-total" id="gt-${g.id}">小計：${gtStr}</div>
+    `;
+    c.appendChild(div);
+  });
+  calcTotals();
+}
+
+function updateGroup(gid, field, val){
+  groups = groups.map(g=>g.id===gid?{...g,[field]:val}:g);
+  // タイトルのみ変更なので再計算不要
+}
+
+function updateSub(gid, rid, field, val){
+  if(field==='isDiscount') val = Boolean(val);
+  groups = groups.map(g=>{
+    if(g.id!==gid) return g;
+    return {...g, subRows: g.subRows.map(r=>r.id===rid?{...r,[field]:val}:r)};
+  });
+
+  // 連動計算トリガー
+  const needsAutoCalc =
+    (rid === ID_KOMONRYO && field === 'unitPrice') ||
+    (rid === ID_DISCOUNT && field === 'description') ||
+    field === 'kichouMode';
+
+  if(needsAutoCalc){
+    applyAutoCalc();
+    renderGroups();
+    return;
+  }
+
+  // 金額表示を更新（フォーカス維持のため全再描画しない）
+  const g = groups.find(g=>g.id===gid);
+  const row = g.subRows.find(r=>r.id===rid);
+  const amt = rowAmount(row);
+  const amtEl = document.getElementById("amt-"+rid);
+  if(amtEl){
+    amtEl.textContent = row.isDiscount ? "−¥"+fmt(amt) : "¥"+fmt(amt);
+    amtEl.className = row.isDiscount ? "sub-amount negative" : "sub-amount";
+  }
+  const gtEl = document.getElementById("gt-"+gid);
+  if(gtEl){
+    const gt = groupTotal(g);
+    gtEl.textContent = "小計：" + (gt<0?"−¥"+fmt(gt):"¥"+fmt(gt));
+  }
+  if(field==='isDiscount') renderGroups();
+  else calcTotals();
+}
+
+function addGroup(){
+  groups.push({id:nextGid++, description:"", subRows:[
+    {id:nextSid++, description:"", isDiscount:false, quantity:12, unit:"ヶ月", unitPrice:0}
+  ]});
+  renderGroups();
+  setTimeout(()=>{ const gs=document.querySelectorAll(".item-group"); gs[gs.length-1].scrollIntoView({behavior:"smooth",block:"start"}); },50);
+}
+
+function removeGroup(gid){
+  if(groups.length<=1){alert("大項目は1件以上必要です");return;}
+  groups = groups.filter(g=>g.id!==gid);
+  renderGroups();
+}
+
+function moveGroup(idx,dir){
+  const n=[...groups]; const s=idx+dir;
+  if(s<0||s>=n.length) return;
+  [n[idx],n[s]]=[n[s],n[idx]];
+  groups=n; renderGroups();
+}
+
+// 記帳代行グループのIDを動的に特定
+function getKichouGroupId(){
+  const g = groups.find(g=>g.subRows.some(r=>r.autoCalc==='kichou'));
+  return g ? g.id : null;
+}
+
+function addSubRow(gid){
+  const isKichou = (gid === getKichouGroupId());
+  groups = groups.map(g=>{
+    if(g.id!==gid) return g;
+    const newRow = isKichou
+      ? {id:nextSid++, description:"お値引き（月100仕訳まで）", isDiscount:true,  quantity:12, unit:"ヶ月", unitPrice:0, autoCalc:null}
+      : {id:nextSid++, description:"",                           isDiscount:false, quantity:12, unit:"ヶ月", unitPrice:0, autoCalc:null};
+    return {...g, subRows:[...g.subRows, newRow]};
+  });
+  renderGroups();
+}
+
+function removeSubRow(gid,rid){
+  const g = groups.find(g=>g.id===gid);
+  if(g.subRows.length<=1){alert("明細行は1件以上必要です");return;}
+  groups = groups.map(g=>{
+    if(g.id!==gid) return g;
+    return {...g, subRows:g.subRows.filter(r=>r.id!==rid)};
+  });
+  renderGroups();
+}
+
+// ===== プレビュー =====
+function showPreview(){
+  const clientName = document.getElementById("clientName").value;
+  if(!clientName.trim()){
+    alert("宛先（会社名・氏名）を入力してください。");
+    document.getElementById("clientName").focus();
+    return;
+  }
+  const subject    = document.getElementById("subject").value;
+  const quoteDate  = document.getElementById("quoteDate").value;
+  const payment    = document.getElementById("paymentTerms").value;
+  const delivery   = document.getElementById("deliveryTerms").value;
+  const valid      = document.getElementById("validPeriod").value;
+  const staff      = document.getElementById("staff").value;
+  const remarks    = getSelectedRemarks();
+  const {sub,tax,total} = calcTotals();
+
+  let rows = "";
+  let rowNum = 0;
+  groups.forEach((g)=>{
+    rowNum++;
+    // 大項目行
+    const gt = groupTotal(g);
+    rows += `<tr style="background:#f0f4fb;">
+      <td class="c" style="font-weight:bold">${rowNum}</td>
+      <td colspan="4" style="font-weight:bold">${esc(g.description)}</td>
+      <td class="r" style="font-weight:bold">${gt<0?"−¥"+fmt(gt):"¥"+fmt(gt)}</td>
+    </tr>`;
+    // 明細行（サブ）
+    g.subRows.forEach(row=>{
+      // 記帳代行「なし」(0円)はプレビューに出力しない
+      if(row.autoCalc === 'kichou' && row.kichouMode === 'nashi') return;
+      const amt = rowAmount(row);
+      const discCls = row.isDiscount ? "discount-row" : "sub-item-row";
+      rows += `<tr class="${discCls}">
+        <td></td>
+        <td style="padding-left:12px">${esc(row.description)}</td>
+        <td class="r">${(Number(row.quantity)||0).toLocaleString("ja-JP")}</td>
+        <td class="c">${esc(row.unit)}</td>
+        <td class="r">${row.isDiscount?"−":""}¥${fmt(row.unitPrice)}</td>
+        <td class="r">${row.isDiscount?"−":""}¥${fmt(amt)}</td>
+      </tr>`;
+    });
+  });
+
+  const metaPayment = payment ? `<div><strong>支払条件：</strong>${esc(payment)}</div>` : "";
+
+  document.getElementById("quote-paper").innerHTML = `
+    <h2>御　見　積　書</h2>
+    <div class="quote-top">
+      <div class="quote-client-block">
+        <div class="quote-client">${esc(clientName)}　様</div>
+        <div class="quote-meta">
+          <div><strong>件名：</strong>${esc(subject)}</div>
+          <div style="font-size:9px;color:#666;margin-bottom:4px">下記のとおり、御見積もり申し上げます。</div>
+          <div><strong>納期：</strong>${esc(delivery)}</div>
+          ${metaPayment}
+          <div><strong>有効期限：</strong>${esc(valid)}</div>
+        </div>
+      </div>
+      <div class="quote-sender">
+        <div class="sender-name">グロースリンク税理士法人<br>亀戸オフィス</div>
+        〒136-0071<br>
+        東京都江東区亀戸1-36-8<br>
+        新亀戸ビル6階<br>
+        TEL：03-5627-8700<br>
+        担当：${esc(staff)}<br>
+        <strong>見積日：</strong>${esc(quoteDate)}
+      </div>
+    </div>
+
+    <div class="total-banner">
+      <span>合計金額</span>
+      <span>¥${total.toLocaleString("ja-JP")}　（税込）</span>
+    </div>
+
+    <table class="items">
+      <thead>
+        <tr><th style="width:36px">No.</th><th>摘要</th><th style="width:60px">数量</th><th style="width:48px">単位</th><th style="width:100px">単価</th><th style="width:110px">金額</th></tr>
+      </thead>
+      <tbody>
+        ${rows}
+        <tr class="subtotal-row">
+          <td colspan="4" style="border:none;background:#fff"></td>
+          <td class="c">小計</td><td class="r">¥${sub.toLocaleString("ja-JP")}</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" style="border:none;background:#fff"></td>
+          <td class="c">消費税（10%）</td><td class="r">¥${tax.toLocaleString("ja-JP")}</td>
+        </tr>
+        <tr class="grand-row">
+          <td colspan="4" style="border:none;background:#fff"></td>
+          <td class="c">合計</td><td class="r">¥${total.toLocaleString("ja-JP")}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    ${remarks ? `<div class="remarks-label">備考</div><div class="remarks-box">${esc(remarks)}</div>` : ""}
+  `;
+
+  // Gmail用データを保持
+  const clientContact = document.getElementById("clientContact").value;
+  window._previewData = { clientName, clientContact, subject, quoteDate, staff, total, sub, tax, payment, delivery, valid };
+
+  // メール本文を生成してエディタにセット
+  populateMailEditor();
+
+  document.getElementById("form-view").style.display = "none";
+  document.getElementById("preview-view").style.display = "block";
+  window.scrollTo(0,0);
+}
+
+function buildMailBody(){
+  const d = window._previewData || {};
+  const clientName = d.clientName || '';
+  const staff      = d.staff      || '';
+
+  const clientContact = d.clientContact || '';
+  const salutation = clientContact
+    ? `${clientName}\n${clientContact} 様`
+    : `${clientName} 様`;
+  return `${salutation}\n\nお世話になっております。
+グロースリンク税理士法人 亀戸オフィスの${staff}です。
+先日のお打合せの内容を基に作成した御見積書をPDFにてお送りいたします。
+ご不明な点がございましたら、お気軽にお申し付けください。
+
+御社のお力添えができればと思いますので、ご検討のほどよろしくお願いいたします。`;
+}
+
+function buildMailSubject(){
+  return '御見積書のご送付【グロースリンク税理士法人】';
+}
+
+function populateMailEditor(){
+  document.getElementById('mail-subject').value = buildMailSubject();
+  document.getElementById('mail-body').value    = buildMailBody();
+}
+
+function resetMailBody(){
+  if(!confirm('編集内容を破棄してテンプレートに戻しますか？')) return;
+  populateMailEditor();
+}
+
+function showForm(){
+  document.getElementById("form-view").style.display = "block";
+  document.getElementById("preview-view").style.display = "none";
+  window.scrollTo(0,0);
+}
+
+function copyText(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  navigator.clipboard.writeText(el.value).then(()=>showCopyToast()).catch(()=>{
+    el.select(); document.execCommand('copy'); showCopyToast();
+  });
+}
+
+function copyMailBody(){
+  const bodyEl = document.getElementById('mail-body');
+  if(!bodyEl) return;
+  navigator.clipboard.writeText(bodyEl.value).then(()=>showCopyToast()).catch(()=>{
+    bodyEl.select(); document.execCommand('copy'); showCopyToast();
+  });
+}
+
+function showCopyToast(){
+  const el = document.getElementById('copy-toast');
+  if(!el) return;
+  el.style.display = 'block';
+  setTimeout(()=>{ el.style.display = 'none'; }, 2000);
+}
+
+// ===== 下書き保存（localStorage） =====
+const STORAGE_KEY = 'growthlink_quotes';
+let currentDraftId = null;
+
+function getAllDrafts(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e){ return {}; }
+}
+function setAllDrafts(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+
+function getFormData(){
+  return {
+    clientName:      document.getElementById('clientName').value,
+    clientContact:   document.getElementById('clientContact').value,
+    subject:      document.getElementById('subject').value,
+    quoteDate:    document.getElementById('quoteDate').value,
+    paymentTerms: document.getElementById('paymentTerms').value,
+    deliveryTerms:document.getElementById('deliveryTerms').value,
+    validPeriod:  document.getElementById('validPeriod').value,
+    staff:        document.getElementById('staff').value,
+    remarks:      getSelectedRemarks(),
+    groups:       JSON.parse(JSON.stringify(groups)),
+    remarkItems:  JSON.parse(JSON.stringify(remarkItems)),
+    nextGid, nextSid,
+  };
+}
+
+function setFormData(data){
+  document.getElementById('clientName').value    = data.clientName    || '';
+  document.getElementById('clientContact').value = data.clientContact || '';
+  document.getElementById('subject').value       = data.subject       || '';
+  document.getElementById('quoteDate').value     = data.quoteDate     || '';
+  document.getElementById('paymentTerms').value  = data.paymentTerms  || '';
+  document.getElementById('deliveryTerms').value = data.deliveryTerms || '';
+  document.getElementById('validPeriod').value   = data.validPeriod   || '';
+  document.getElementById('staff').value         = data.staff         || '';
+  groups   = data.groups;
+  nextGid  = data.nextGid  || 10;
+  nextSid  = data.nextSid  || 600;
+  if(data.remarkItems) remarkItems = data.remarkItems;
+  applyAutoCalc();
+  renderGroups();
+  renderRemarks();
+}
+
+function refreshDraftSelect(){
+  const sel = document.getElementById('draft-select');
+  const drafts = getAllDrafts();
+  sel.innerHTML = '';
+  const ids = Object.keys(drafts).sort((a,b)=>drafts[b].savedAt - drafts[a].savedAt);
+  if(ids.length === 0){
+    sel.innerHTML = '<option value="">（保存済みの下書きなし）</option>';
+    return;
+  }
+  ids.forEach(id=>{
+    const d = drafts[id];
+    const label = d.clientName ? `${d.clientName}　${d.subject||''}` : `（無題）`;
+    const dt = new Date(d.savedAt).toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = `${label}　[${dt}]`;
+    if(id === currentDraftId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function saveDraft(){
+  const drafts = getAllDrafts();
+  if(!currentDraftId) currentDraftId = 'draft_' + Date.now();
+  const data = getFormData();
+  data.savedAt = Date.now();
+  drafts[currentDraftId] = data;
+  setAllDrafts(drafts);
+  refreshDraftSelect();
+  showToast('💾 保存しました');
+  updateAutoSaveNote();
+}
+
+function loadDraft(id){
+  if(!id) return;
+  const drafts = getAllDrafts();
+  if(!drafts[id]) return;
+  currentDraftId = id;
+  setFormData(drafts[id]);
+  updateAutoSaveNote();
+}
+
+function newDraft(){
+  if(!confirm('現在の入力内容を破棄して新規作成しますか？\n（先に「保存」すれば残ります）')) return;
+  currentDraftId = null;
+  // フォームをデフォルト値にリセット
+  document.getElementById('clientName').value    = '';
+  document.getElementById('clientContact').value = '';
+  document.getElementById('subject').value       = '税務顧問契約';
+  const td = new Date();
+  document.getElementById('quoteDate').value     = `${td.getFullYear()}年${td.getMonth()+1}月${td.getDate()}日`;
+  document.getElementById('paymentTerms').value  = '';
+  document.getElementById('deliveryTerms').value = '別途ご相談';
+  document.getElementById('validPeriod').value   = '御見積後2週間';
+  document.getElementById('staff').value         = '';
+  remarkItems = REMARK_MASTER.map(r=>({...r}));
+  renderRemarks();
+  groups = JSON.parse(JSON.stringify(defaultGroups));
+  nextGid = 5; nextSid = 500;
+  applyAutoCalc();
+  renderGroups();
+  refreshDraftSelect();
+  document.getElementById('autosave-note').textContent = '─';
+}
+
+function deleteDraft(){
+  const sel = document.getElementById('draft-select');
+  const id = sel.value;
+  if(!id) return;
+  const drafts = getAllDrafts();
+  const label = drafts[id] && drafts[id].clientName ? drafts[id].clientName : '（無題）';
+  if(!confirm(`「${label}」の下書きを削除しますか？`)) return;
+  delete drafts[id];
+  setAllDrafts(drafts);
+  if(currentDraftId === id) currentDraftId = null;
+  refreshDraftSelect();
+  showToast('🗑 削除しました');
+}
+
+// 自動保存（30秒ごと、currentDraftIdがある場合のみ）
+function autoSave(){
+  if(!currentDraftId) return;
+  saveDraft();
+}
+setInterval(autoSave, 30000);
+
+function updateAutoSaveNote(){
+  const el = document.getElementById('autosave-note');
+  if(currentDraftId){
+    const drafts = getAllDrafts();
+    const d = drafts[currentDraftId];
+    if(d && d.savedAt){
+      const dt = new Date(d.savedAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+      el.textContent = `最終保存 ${dt}`;
+    }
+  } else {
+    el.textContent = '未保存';
+  }
+}
+
+let toastTimer;
+function showToast(msg){
+  const el = document.getElementById('save-toast');
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ el.style.opacity='0'; }, 2000);
+  updateAutoSaveNote();
+}
+
+// 初期描画
+applyAutoCalc();
+renderGroups();
+renderRemarks();
+refreshDraftSelect();
+</script>
+<div id="save-toast"></div>
+</body>
+</html>
