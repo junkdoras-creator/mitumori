@@ -385,10 +385,11 @@ function parseUchiwake(text) {
 }
 
 /* ============================================================
-   総勘定元帳 Parser
+   総勘定元帳 Parser（月次・取引データ拡張版）
    ============================================================ */
-function parseMotochou(text) {
+function parseMotochou(text, pages) {
   const accounts = {};
+  const monthly = {};
   const lines = text.split('\n');
   let currentAccount = null;
 
@@ -396,26 +397,28 @@ function parseMotochou(text) {
     const line = lines[i];
     const stripped = line.replace(/[\s　]+/g, '');
 
+    // Account header
     const headerMatch = line.match(/令和\s*\d+年度\s+(.+?)\s+\d+\s*頁/);
     if (headerMatch) {
       currentAccount = cleanName(headerMatch[1]);
-      if (!accounts[currentAccount]) {
-        accounts[currentAccount] = { debit: 0, credit: 0 };
-      }
+      if (!accounts[currentAccount]) accounts[currentAccount] = { debit: 0, credit: 0 };
+      if (!monthly[currentAccount]) monthly[currentAccount] = {};
       continue;
     }
     if (!headerMatch && stripped.includes('令和') && stripped.includes('年度') && stripped.includes('頁')) {
       const m2 = stripped.match(/令和\d+年度(.+?)\d+頁/);
       if (m2) {
         currentAccount = m2[1];
-        if (!accounts[currentAccount]) {
-          accounts[currentAccount] = { debit: 0, credit: 0 };
-        }
+        if (!accounts[currentAccount]) accounts[currentAccount] = { debit: 0, credit: 0 };
+        if (!monthly[currentAccount]) monthly[currentAccount] = {};
         continue;
       }
     }
 
-    if (currentAccount && (stripped.includes('当期累計') || /当\s*期\s*累\s*計/.test(line))) {
+    if (!currentAccount) continue;
+
+    // Annual total
+    if (stripped.includes('当期累計') || /当\s*期\s*累\s*計/.test(line)) {
       const nums2 = line.match(/当\s*期\s*累\s*計\s+([\d,]+)\s+([\d,]+)/);
       if (nums2) {
         accounts[currentAccount].debit = parseNum(nums2[1]);
@@ -431,9 +434,107 @@ function parseMotochou(text) {
         }
       }
     }
+
+    // Monthly total: "N月度 合計  debit  credit"
+    const monthMatch = line.match(/(\d{1,2})\s*月度\s*合\s*計\s+([\d,]+)\s+([\d,]+)/);
+    if (monthMatch) {
+      const mon = parseInt(monthMatch[1]);
+      monthly[currentAccount][mon] = {
+        d: parseNum(monthMatch[2]),
+        c: parseNum(monthMatch[3]),
+      };
+    } else if (stripped.match(/(\d{1,2})月度合計/)) {
+      const mm = stripped.match(/(\d{1,2})月度合計/);
+      const mon = parseInt(mm[1]);
+      const allNums = line.match(/[\d,]{2,}/g);
+      if (allNums && allNums.length >= 2) {
+        const nv = allNums.map(n => parseNum(n)).filter(n => n > 0);
+        if (nv.length >= 2) {
+          monthly[currentAccount][mon] = { d: nv[nv.length - 2], c: nv[nv.length - 1] };
+        }
+      }
+    }
   }
 
-  return accounts;
+  // Transaction-level parsing from pages (positional data)
+  const transactions = parseMotochouTransactions(pages);
+
+  return { accounts, monthly, transactions };
+}
+
+function parseMotochouTransactions(pages) {
+  if (!pages) return [];
+  const txns = [];
+  let currentAccount = null;
+  let debitColX = null;
+  let creditColX = null;
+  let lastDate = '';
+  let lastDesc = '';
+
+  for (const pageLines of pages) {
+    for (const lineItems of pageLines) {
+      if (!lineItems.length) continue;
+      const lineText = lineItems.map(i => i.str).join(' ');
+      const stripped = lineText.replace(/[\s　]+/g, '');
+
+      // Account header
+      if (stripped.includes('令和') && stripped.includes('年度') && stripped.includes('頁')) {
+        const m = stripped.match(/令和\d+年度(.+?)\d+頁/);
+        if (m) {
+          currentAccount = m[1];
+          debitColX = null;
+          creditColX = null;
+        }
+        continue;
+      }
+
+      // Column header detection
+      for (const item of lineItems) {
+        const s = item.str.replace(/\s/g, '');
+        if (s.includes('借方金額') || s.includes('借方')) debitColX = item.x;
+        if (s.includes('貸方金額') || s.includes('貸方')) creditColX = item.x;
+      }
+
+      if (!currentAccount) continue;
+      if (stripped.includes('当期累計') || stripped.includes('月度合計') || stripped.includes('前頁より') || stripped.includes('前月より')) continue;
+
+      // Date detection
+      const dateMatch = stripped.match(/^(\d{1,2})\/(\d{1,2})/);
+      if (dateMatch) {
+        lastDate = `${dateMatch[1]}/${dateMatch[2]}`;
+        const descItems = lineItems.filter(i => !/^\d/.test(i.str.trim()) && i.str.trim().length > 0);
+        if (descItems.length) lastDesc = descItems.map(i => i.str).join('').replace(/\s+/g, '');
+        continue;
+      }
+
+      // Transaction amount line: has numbers in debit/credit column positions
+      if (debitColX || creditColX) {
+        const numItems = lineItems.filter(i => /^[\d,]+$/.test(i.str.trim()) && parseNum(i.str) >= 100);
+        for (const ni of numItems) {
+          const val = parseNum(ni.str);
+          if (val < 100) continue;
+          let col = 'unknown';
+          if (debitColX && Math.abs(ni.x - debitColX) < 80) col = 'debit';
+          else if (creditColX && Math.abs(ni.x - creditColX) < 80) col = 'credit';
+          else continue;
+
+          // Description from this line
+          const descOnLine = lineItems
+            .filter(i => !/^[\d,]+$/.test(i.str.trim()) && i.str.trim().length > 0 && !/頁|令和|年度/.test(i.str))
+            .map(i => i.str.trim()).join('');
+
+          txns.push({
+            account: currentAccount,
+            date: lastDate,
+            desc: descOnLine || lastDesc,
+            amount: val,
+            col,
+          });
+        }
+      }
+    }
+  }
+  return txns;
 }
 
 /* ============================================================
@@ -470,9 +571,10 @@ function renderParsed() {
   }
 
   if (state.motochou) {
+    const accts = state.motochou.accounts || state.motochou;
     html += '<div class="section-title">② 抽出結果：総勘定元帳</div>';
     html += '<button class="toggle-btn" onclick="toggleTable(\'tbl-moto\')">▼ 科目別 当期累計</button>';
-    const rows = Object.entries(state.motochou).map(([name, v]) => [
+    const rows = Object.entries(accts).map(([name, v]) => [
       '<span class="source-tag tag-ledger">元帳</span>' + esc(name),
       fmt(v.debit), fmt(v.credit), fmt(v.debit - v.credit)
     ]);
@@ -530,7 +632,8 @@ function runChecks() {
   }
   function findLedger(keyword) {
     if (!state.motochou) return null;
-    for (const [name, v] of Object.entries(state.motochou)) {
+    const accts = state.motochou.accounts || state.motochou;
+    for (const [name, v] of Object.entries(accts)) {
       if (name.includes(keyword)) return { name, ...v };
     }
     return null;
@@ -771,6 +874,256 @@ function runChecks() {
             { label: '元帳 残高', amount: net },
           ],
           ok,
+        });
+      }
+    }
+  }
+
+  // ========================================
+  // F: 総勘定元帳 懸念点分析
+  // ========================================
+  if (state.motochou && state.motochou.monthly) {
+    const mo = state.motochou.monthly;
+    const accts = state.motochou.accounts;
+    const txns = state.motochou.transactions || [];
+    const allMonths = [];
+    for (const a of Object.values(mo)) { for (const m of Object.keys(a)) allMonths.push(parseInt(m)); }
+    const months = [...new Set(allMonths)].sort((a, b) => {
+      const oa = a >= 11 ? a - 12 : a;
+      const ob = b >= 11 ? b - 12 : b;
+      return oa - ob;
+    });
+    const lastMonth = months.length ? months[months.length - 1] : null;
+
+    // Helper
+    function monthlyDebits(acctName) {
+      const data = mo[acctName];
+      if (!data) return [];
+      return months.map(m => ({ month: m, d: (data[m] || {}).d || 0 }));
+    }
+
+    // --- F1: 交際費 年間限度 ---
+    const kousaiLedger = findLedger('交際費');
+    if (kousaiLedger) {
+      const kousaiTotal = kousaiLedger.debit - kousaiLedger.credit;
+      const over800 = kousaiTotal > 8000000;
+      checks.push({
+        cat: 'F. 総勘定元帳 懸念点分析',
+        title: `交際費 年間合計 ${fmt(kousaiTotal)} ${over800 ? '→ 800万円超（損金不算入あり）' : '（800万円以下）'}`,
+        items: [
+          { label: '交際費 年間合計', amount: kousaiTotal },
+          { label: '中小法人 損金算入限度', amount: 8000000 },
+        ],
+        ok: !over800,
+      });
+    }
+
+    // --- F2: 交際費率 ---
+    const uriageLedger = findLedger('売上高');
+    if (kousaiLedger && uriageLedger) {
+      const kousaiTotal = kousaiLedger.debit - kousaiLedger.credit;
+      const uriage = uriageLedger.credit;
+      const ratio = uriage > 0 ? (kousaiTotal / uriage * 100) : 0;
+      checks.push({
+        cat: 'F. 総勘定元帳 懸念点分析',
+        title: `交際費率 ${ratio.toFixed(1)}%（売上高比）${ratio > 10 ? ' → 高水準' : ''}`,
+        items: [
+          { label: '交際費', amount: kousaiTotal },
+          { label: '売上高', amount: uriage },
+        ],
+        ok: ratio <= 10,
+      });
+    }
+
+    // --- F3: 交際費 高額取引 ---
+    const kousaiHigh = txns.filter(t =>
+      t.account === '交際費' && t.col === 'debit' && t.amount >= 50000
+    );
+    if (kousaiHigh.length) {
+      checks.push({
+        cat: 'F. 総勘定元帳 懸念点分析',
+        title: `交際費 1件5万円超の取引が ${kousaiHigh.length} 件（税務調査で確認されやすい）`,
+        table: {
+          headers: ['日付', '摘要', '金額'],
+          rows: kousaiHigh.slice(0, 20).map(t => ({
+            cells: [t.date, t.desc.slice(0, 30), fmt(t.amount)],
+            ok: false,
+          })),
+        },
+        ok: false,
+      });
+    } else if (kousaiLedger) {
+      checks.push({
+        cat: 'F. 総勘定元帳 懸念点分析',
+        title: '交際費 1件5万円超の取引なし',
+        items: [{ label: '判定', amount: 0 }],
+        ok: true,
+      });
+    }
+
+    // --- F4: 役員報酬 定期同額性 ---
+    const yakuinMonthly = monthlyDebits('役員報酬');
+    if (yakuinMonthly.length) {
+      const amounts = yakuinMonthly.map(m => m.d);
+      const nonZero = amounts.filter(a => a > 0);
+      const isUniform = nonZero.length > 0 && nonZero.every(a => a === nonZero[0]);
+      const zeroMonths = yakuinMonthly.filter(m => m.d === 0);
+
+      let detail = yakuinMonthly.map(m => `${m.month}月: ${fmt(m.d)}`).join('、');
+      let title = isUniform
+        ? `役員報酬 定期同額 ✓（月額 ${fmt(nonZero[0])}）`
+        : '役員報酬 月額が不均一 → 定期同額給与の要件を確認';
+      if (zeroMonths.length > 0 && !isUniform) {
+        title += `（${zeroMonths.map(m => m.month + '月').join(',')}が0円）`;
+      }
+
+      checks.push({
+        cat: 'F. 総勘定元帳 懸念点分析',
+        title,
+        table: {
+          headers: ['月', '支給額'],
+          rows: yakuinMonthly.map(m => ({
+            cells: [`${m.month}月`, fmt(m.d)],
+            ok: nonZero.length > 0 && (m.d === nonZero[0] || m.d === 0),
+          })),
+        },
+        ok: isUniform,
+      });
+    }
+
+    // --- F5: 地代家賃 定額性 ---
+    const chiMonthly = monthlyDebits('地代家賃');
+    if (chiMonthly.length) {
+      const amounts = chiMonthly.map(m => m.d).filter(a => a > 0);
+      const mode = amounts.length ? amounts.sort((a,b) =>
+        amounts.filter(v=>v===b).length - amounts.filter(v=>v===a).length
+      )[0] : 0;
+      const irregular = chiMonthly.filter(m => m.d > 0 && m.d !== mode);
+
+      checks.push({
+        cat: 'F. 総勘定元帳 懸念点分析',
+        title: irregular.length
+          ? `地代家賃 ${irregular.map(m => m.month + '月').join(',')}が通常月額（${fmt(mode)}）と異なる`
+          : `地代家賃 毎月定額 ✓（${fmt(mode)}）`,
+        table: {
+          headers: ['月', '金額'],
+          rows: chiMonthly.map(m => ({
+            cells: [`${m.month}月`, fmt(m.d)],
+            ok: m.d === mode || m.d === 0,
+          })),
+        },
+        ok: irregular.length === 0,
+      });
+    }
+
+    // --- F6: 費用科目 月次異常値検出 ---
+    const expenseAccounts = [
+      '交際費','旅費交通費','消耗品費','通信費','水道光熱費',
+      '会議費','支払手数料','車両費','保険料',
+    ];
+    const anomalies = [];
+    for (const acctName of expenseAccounts) {
+      const md = monthlyDebits(acctName);
+      if (md.length < 3) continue;
+      const vals = md.map(m => m.d).filter(v => v > 0);
+      if (vals.length < 3) continue;
+      const avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+      for (const m of md) {
+        if (m.d > avg * 2.5 && m.d > 10000) {
+          anomalies.push({
+            account: acctName,
+            month: m.month,
+            amount: m.d,
+            avg: Math.round(avg),
+            ratio: (m.d / avg).toFixed(1),
+          });
+        }
+      }
+    }
+    if (anomalies.length) {
+      checks.push({
+        cat: 'F. 総勘定元帳 懸念点分析',
+        title: `費用科目 月次異常値 ${anomalies.length} 件検出（平均の2.5倍超）`,
+        table: {
+          headers: ['科目', '月', '金額', '月平均', '倍率'],
+          rows: anomalies.map(a => ({
+            cells: [a.account, `${a.month}月`, fmt(a.amount), fmt(a.avg), `${a.ratio}倍`],
+            ok: false,
+          })),
+        },
+        ok: false,
+      });
+    }
+
+    // --- F7: 期末月の費用集中度 ---
+    if (lastMonth) {
+      const endConcentration = [];
+      for (const acctName of expenseAccounts) {
+        const md = monthlyDebits(acctName);
+        if (md.length < 3) continue;
+        const vals = md.map(m => m.d).filter(v => v > 0);
+        if (vals.length < 3) continue;
+        const avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+        const lastEntry = md.find(m => m.month === lastMonth);
+        if (lastEntry && lastEntry.d > avg * 2 && lastEntry.d > 20000) {
+          endConcentration.push({
+            account: acctName,
+            lastAmt: lastEntry.d,
+            avg: Math.round(avg),
+            ratio: (lastEntry.d / avg).toFixed(1),
+          });
+        }
+      }
+      if (endConcentration.length) {
+        checks.push({
+          cat: 'F. 総勘定元帳 懸念点分析',
+          title: `期末月（${lastMonth}月）に費用が集中している科目あり → 期末調整・利益操作の確認`,
+          table: {
+            headers: ['科目', `${lastMonth}月`, '月平均', '倍率'],
+            rows: endConcentration.map(a => ({
+              cells: [a.account, fmt(a.lastAmt), fmt(a.avg), `${a.ratio}倍`],
+              ok: false,
+            })),
+          },
+          ok: false,
+        });
+      }
+    }
+
+    // --- F8: 旅費交通費の水準 ---
+    const ryohiLedger = findLedger('旅費交通費');
+    if (ryohiLedger && uriageLedger) {
+      const ryohiTotal = ryohiLedger.debit - ryohiLedger.credit;
+      const uriage = uriageLedger.credit;
+      const ratio = uriage > 0 ? (ryohiTotal / uriage * 100) : 0;
+      if (ratio > 15) {
+        checks.push({
+          cat: 'F. 総勘定元帳 懸念点分析',
+          title: `旅費交通費率 ${ratio.toFixed(1)}%（売上高比）→ 高水準。私的利用の混入に注意`,
+          items: [
+            { label: '旅費交通費', amount: ryohiTotal },
+            { label: '売上高', amount: uriage },
+          ],
+          ok: false,
+        });
+      }
+    }
+
+    // --- F9: 現金取扱比率 ---
+    const cashAcct = accts['現金'];
+    if (cashAcct && uriageLedger) {
+      const cashOut = cashAcct.credit;
+      const uriage = uriageLedger.credit;
+      const ratio = uriage > 0 ? (cashOut / uriage * 100) : 0;
+      if (ratio > 80) {
+        checks.push({
+          cat: 'F. 総勘定元帳 懸念点分析',
+          title: `現金出金率 ${ratio.toFixed(0)}%（売上高比）→ 現金取引が多い。証憑管理の強化を推奨`,
+          items: [
+            { label: '現金出金累計', amount: cashOut },
+            { label: '売上高', amount: uriage },
+          ],
+          ok: false,
         });
       }
     }
