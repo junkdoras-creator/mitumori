@@ -270,11 +270,12 @@ function parseKessan(text) {
     const line = raw.trim();
     if (!line) continue;
 
-    if (/資産の部/.test(line) && !/負債/.test(line)) { section = 'bs'; continue; }
-    if (/損\s*益\s*計\s*算\s*書/.test(line)) { section = 'pl'; continue; }
-    if (/販売費及び一般管理費内訳/.test(line)) { section = 'plDetail'; continue; }
-    if (/株\s*主\s*資\s*本\s*等\s*変\s*動/.test(line)) { section = ''; continue; }
-    if (/個\s*別\s*注\s*記\s*表/.test(line)) { section = ''; continue; }
+    const stripped = line.replace(/[\s　]+/g, '');
+    if (stripped.includes('資産の部') && !stripped.includes('負債')) { section = 'bs'; continue; }
+    if (stripped.includes('損益計算書')) { section = 'pl'; continue; }
+    if (stripped.includes('販売費及び一般管理費内訳')) { section = 'plDetail'; continue; }
+    if (stripped.includes('株主資本等変動')) { section = ''; continue; }
+    if (stripped.includes('個別注記表')) { section = ''; continue; }
 
     const numMatch = line.match(/(-?[\d,]+)\s*$/);
     if (!numMatch) continue;
@@ -294,47 +295,81 @@ function parseKessan(text) {
 /* ============================================================
    科目内訳書 Parser
    ============================================================ */
+const KNOWN_BS_ACCOUNTS = [
+  '売掛金','未収入金','買掛金','未払金','未払費用','未払法人税等','未払消費税等',
+  '仮払金','前渡金','前払費用','預け金','長期前払費用','立替金',
+  '短期借入金','長期借入金','借入金','仮受金','預り金',
+  '受取手形','支払手形',
+];
+
 function parseUchiwake(text) {
   const items = [];
   const lines = text.split('\n');
   let currentForm = '';
+  let currentAccount = '';
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
+    if (!line) continue;
+    const stripped = line.replace(/[\s　]+/g, '');
 
-    const formMatch = line.match(/(売掛金|未収入金|仮払金|前渡金|棚卸資産|買掛金|未払金|未払費用|未払法人税|借入金|地代家賃|役員給与|工業所有権|貸付金|仮受金|源泉)/);
-    if (formMatch && /内訳/.test(line)) {
-      currentForm = cleanName(formMatch[0]);
-    }
+    const formKeywords = [
+      '売掛金','未収入金','仮払金','前渡金','棚卸資産','買掛金',
+      '未払金','未払費用','未払法人税','借入金','地代家賃',
+      '役員給与','工業所有権','貸付金','仮受金','源泉',
+    ];
 
-    if (/人\s*件\s*費\s*の\s*内\s*訳/.test(line)) currentForm = '人件費';
-
-    const totalMatch = line.match(/(?:小?\s*計|合\s*計)\s+(-?[\d,]+)/);
-    if (totalMatch && currentForm) {
-      const amount = parseNum(totalMatch[1]);
-      items.push({ form: currentForm, name: currentForm, amount, type: 'total' });
-    }
-
-    if (currentForm === '役員給与' || currentForm === '人件費') {
-      const numMatch = line.match(/(-?[\d,]+)\s*$/);
-      if (numMatch) {
-        const amount = parseNum(numMatch[1]);
-        const name = cleanName(line.slice(0, numMatch.index));
-        if (/役員給与計|役員給与/.test(name) && amount > 0) {
-          items.push({ form: '役員給与', name: '役員給与計', amount, type: 'detail' });
-        }
-        if (/給与手当/.test(name) && amount > 0) {
-          items.push({ form: '人件費', name: '給与手当', amount, type: 'detail' });
+    if (stripped.includes('内訳')) {
+      for (const kw of formKeywords) {
+        if (stripped.includes(kw)) {
+          currentForm = kw;
+          currentAccount = kw;
+          break;
         }
       }
     }
 
-    if (currentForm && /計\s/.test(line)) {
-      const parts = line.match(/([^\d]*?)\s+(-?[\d,]+)/);
-      if (parts) {
-        const lbl = cleanName(parts[1]);
-        if (/^計$/.test(lbl) || /^小計$/.test(lbl)) {
-          // already handled
+    if (stripped.includes('人件費の内訳')) currentForm = '人件費';
+
+    for (const acct of KNOWN_BS_ACCOUNTS) {
+      if (stripped.startsWith(acct) && !stripped.includes('内訳')) {
+        currentAccount = acct;
+        break;
+      }
+    }
+
+    const totalMatch = stripped.match(/^(?:小?計|合計)([\d,\-]+)/);
+    if (totalMatch && currentAccount) {
+      const amount = parseNum(totalMatch[1]);
+      items.push({ form: currentForm, name: currentAccount, amount, type: 'total' });
+    } else {
+      const totalMatch2 = line.match(/(?:小?\s*計|合\s*計)\s+([\d,\-]+)/);
+      if (totalMatch2 && currentAccount) {
+        const amount = parseNum(totalMatch2[1]);
+        items.push({ form: currentForm, name: currentAccount, amount, type: 'total' });
+      }
+    }
+
+    if (currentForm === '役員給与' || stripped.includes('役員給与')) {
+      const numMatch = line.match(/([\d,]+)\s*$/);
+      if (numMatch) {
+        const amount = parseNum(numMatch[1]);
+        if (stripped.includes('計') && amount > 0 && !stripped.includes('内訳') && !stripped.includes('注')) {
+          items.push({ form: '役員給与', name: '役員給与計', amount, type: 'detail' });
+        }
+      }
+    }
+
+    if (currentForm === '人件費' || stripped.includes('人件費')) {
+      const numMatch = line.match(/([\d,]+)\s*$/);
+      if (numMatch) {
+        const amount = parseNum(numMatch[1]);
+        const nameRaw = cleanName(line.slice(0, numMatch.index));
+        if (nameRaw.includes('役員給与') && amount > 0) {
+          items.push({ form: '人件費', name: '役員給与', amount, type: 'detail' });
+        }
+        if (nameRaw.includes('給与手当') && amount > 0) {
+          items.push({ form: '人件費', name: '給与手当', amount, type: 'detail' });
         }
       }
     }
@@ -343,7 +378,7 @@ function parseUchiwake(text) {
   const dedup = [];
   const seen = new Set();
   for (const item of items) {
-    const key = item.form + ':' + item.name + ':' + item.amount;
+    const key = item.name + ':' + item.amount;
     if (!seen.has(key)) { seen.add(key); dedup.push(item); }
   }
   return dedup;
@@ -359,6 +394,7 @@ function parseMotochou(text) {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    const stripped = line.replace(/[\s　]+/g, '');
 
     const headerMatch = line.match(/令和\s*\d+年度\s+(.+?)\s+\d+\s*頁/);
     if (headerMatch) {
@@ -368,12 +404,31 @@ function parseMotochou(text) {
       }
       continue;
     }
+    if (!headerMatch && stripped.includes('令和') && stripped.includes('年度') && stripped.includes('頁')) {
+      const m2 = stripped.match(/令和\d+年度(.+?)\d+頁/);
+      if (m2) {
+        currentAccount = m2[1];
+        if (!accounts[currentAccount]) {
+          accounts[currentAccount] = { debit: 0, credit: 0 };
+        }
+        continue;
+      }
+    }
 
-    if (currentAccount && /当期累計/.test(line)) {
-      const nums = line.match(/当期累計\s+([\d,]+)\s+([\d,]+)/);
-      if (nums) {
-        accounts[currentAccount].debit = parseNum(nums[1]);
-        accounts[currentAccount].credit = parseNum(nums[2]);
+    if (currentAccount && (stripped.includes('当期累計') || /当\s*期\s*累\s*計/.test(line))) {
+      const nums2 = line.match(/当\s*期\s*累\s*計\s+([\d,]+)\s+([\d,]+)/);
+      if (nums2) {
+        accounts[currentAccount].debit = parseNum(nums2[1]);
+        accounts[currentAccount].credit = parseNum(nums2[2]);
+      } else {
+        const allNums = line.match(/[\d,]+/g);
+        if (allNums && allNums.length >= 2) {
+          const numVals = allNums.map(n => parseNum(n)).filter(n => n > 0);
+          if (numVals.length >= 2) {
+            accounts[currentAccount].debit = numVals[numVals.length - 2];
+            accounts[currentAccount].credit = numVals[numVals.length - 1];
+          }
+        }
       }
     }
   }
@@ -471,7 +526,7 @@ function runChecks() {
   }
   function findUchi(keyword) {
     if (!state.uchiwake) return null;
-    return state.uchiwake.find(r => r.name.includes(keyword) && r.type === 'total');
+    return state.uchiwake.find(r => (r.name.includes(keyword) || r.form.includes(keyword)) && r.type === 'total');
   }
   function findLedger(keyword) {
     if (!state.motochou) return null;
@@ -694,18 +749,23 @@ function runChecks() {
   // ========================================
   if (state.uchiwake && state.motochou) {
     const uchiMap = {
-      '売掛金': '売掛金', '未払法人税': '未払法人税等',
-      '借入金': '短期借入金',
+      '売掛金': '売掛金', '未払法人税等': '未払法人税等', '未払法人税': '未払法人税等',
+      '借入金': '短期借入金', '短期借入金': '短期借入金',
+      '未払金': '未払金', '買掛金': '買掛金', '未収入金': '未収入金',
+      '預け金': '預け金', '立替金': '立替金',
     };
+    const seen = new Set();
     for (const item of state.uchiwake.filter(r => r.type === 'total')) {
-      const ledgerName = uchiMap[item.form] || item.form;
+      const ledgerName = uchiMap[item.name] || uchiMap[item.form] || item.name;
+      if (seen.has(ledgerName)) continue;
+      seen.add(ledgerName);
       const ledger = findLedger(ledgerName);
       if (ledger) {
         const net = Math.abs(ledger.debit - ledger.credit);
         const ok = item.amount === net;
         checks.push({
           cat: 'E. 科目内訳書 ↔ 総勘定元帳',
-          title: `${item.form}内訳書 合計 = 元帳 ${ledgerName}`,
+          title: `${item.name}（内訳書 合計）= 元帳 ${ledgerName}`,
           items: [
             { label: '内訳書 合計', amount: item.amount },
             { label: '元帳 残高', amount: net },
