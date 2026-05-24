@@ -5,888 +5,808 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>法人税申告書 整合性チェック｜グロースリンク税理士法人 亀戸オフィス</title>
+<title>決算整合性チェック｜グロースリンク税理士法人 亀戸オフィス</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f4f9; min-height: 100vh; }
-
-#form-view { padding: 16px; max-width: 980px; margin: 0 auto; }
-.header { background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%); color: #fff; border-radius: 12px 12px 0 0; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(26,58,107,.3); }
+.wrap { padding: 16px; max-width: 1060px; margin: 0 auto; }
+.header { background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%); color: #fff; border-radius: 12px 12px 0 0; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(26,58,107,.3); flex-wrap: wrap; }
 .header h1 { font-size: 17px; font-weight: 700; }
 .header small { font-size: 10px; opacity: 0.7; letter-spacing: 1px; display: block; margin-bottom: 4px; }
 .card { background: #fff; border-radius: 0 0 12px 12px; padding: 24px 20px 28px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
-
-.section-title { font-size: 13px; font-weight: 700; color: #1a3a6b; border-left: 4px solid #2a5298; padding-left: 10px; margin: 24px 0 14px; letter-spacing: 0.3px; display: flex; align-items: center; gap: 10px; }
+.section-title { font-size: 13px; font-weight: 700; color: #1a3a6b; border-left: 4px solid #2a5298; padding-left: 10px; margin: 24px 0 14px; letter-spacing: 0.3px; }
 .section-title:first-of-type { margin-top: 0; }
-.section-title small { font-size: 11px; font-weight: 400; color: #888; }
-
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 12px; }
-.grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0 12px; }
-.span2 { grid-column: span 2; }
-@media (max-width: 640px) {
-  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
-  .header h1 { font-size: 15px; }
-  .card { padding: 16px 14px 20px; }
-}
-
-.field { margin-bottom: 12px; }
-.field label { display: block; font-size: 11px; color: #666; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.3px; }
-.field label .hint { font-weight: 400; color: #999; font-size: 10px; margin-left: 4px; }
-input:not([type=checkbox]):not([type=file]), select, textarea {
-  width: 100%; border: 1px solid #b8c4d8; border-radius: 6px;
-  padding: 9px 10px; font-size: 14px;
-  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif;
-  background: #fffef0; outline: none; -webkit-appearance: none;
-}
-input[type=checkbox] { -webkit-appearance: checkbox; appearance: checkbox; width: 18px; height: 18px; cursor: pointer; accent-color: #1a3a6b; }
-input:not([readonly]):focus, select:focus, textarea:focus { border-color: #e6a800; box-shadow: 0 0 0 2px rgba(230,168,0,.2); background: #fffbe6; }
-input[type=number] { text-align: right; }
-input[readonly] { background: #f0f0f0 !important; color: #555; }
-
 .btn { border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; }
-.btn-navy  { background: #1a3a6b; color: #fff; }
-.btn-green { background: #2e7d32; color: #fff; }
-.btn-gray  { background: #555; color: #fff; }
-.btn-white { background: #fff; color: #1a3a6b; }
 .btn:hover { opacity: 0.92; }
+.btn-navy { background: #1a3a6b; color: #fff; }
+.btn-white { background: #fff; color: #1a3a6b; }
 
 .guide-banner { background: #fffef0; border: 1px solid #e6c800; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; color: #5d4037; line-height: 1.9; }
 .guide-banner strong { color: #1a3a6b; }
 .guide-steps { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-.guide-step { background: linear-gradient(135deg,#1a3a6b,#2a5298); color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 4px rgba(26,58,107,.2); }
+.guide-step { background: linear-gradient(135deg,#1a3a6b,#2a5298); color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; white-space: nowrap; }
 .guide-step span { opacity: 0.7; margin-right: 4px; }
 
-.draft-bar { background: linear-gradient(to right, #e8edf5, #f0f4f9); padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #ccd3e0; }
-.draft-bar select { width: auto; flex: 1; min-width: 150px; font-size: 13px; padding: 7px 10px; border-radius: 6px; border: 1px solid #ccd3e0; background: #fff !important; }
-.draft-bar .dbtn { border: none; border-radius: 6px; padding: 7px 13px; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; white-space: nowrap; }
-.dbtn-save   { background: linear-gradient(135deg,#1a3a6b,#2a5298); color: #fff; }
-.dbtn-new    { background: #2e7d32; color: #fff; }
-.dbtn-del    { background: #fdecea; color: #c62828; }
-.draft-label { font-size: 12px; color: #555; font-weight: 700; white-space: nowrap; }
+/* Upload */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+@media (max-width: 700px) { .upload-grid { grid-template-columns: 1fr; } }
+.upload-box { background: #f7f9fc; border: 2px dashed #b8c4d8; border-radius: 10px; padding: 20px 14px; text-align: center; cursor: pointer; transition: all .2s; position: relative; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.upload-box:hover, .upload-box.dragover { border-color: #1a3a6b; background: #eef2fa; }
+.upload-box.loaded { border-color: #2e7d32; border-style: solid; background: #f1f8f1; }
+.upload-box .icon { font-size: 28px; }
+.upload-box .label { font-size: 13px; font-weight: 700; color: #1a3a6b; }
+.upload-box .status { font-size: 11px; color: #888; }
+.upload-box.loaded .status { color: #2e7d32; font-weight: 700; }
+.upload-box input { display: none; }
 
-/* アップロード */
-.upload-area { background: #f7f9fc; border: 1px solid #dde3ee; border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; }
-.upload-area-title { font-size: 12px; font-weight: 700; color: #1a3a6b; margin-bottom: 8px; }
-.upload-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
-.upload-row:last-child { margin-bottom: 0; }
-.file-label { display: inline-block; background: #1a3a6b; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
-.file-label:hover { background: #2a5298; }
-.file-label input { display: none; }
-.template-btn { background: #e8edf5; color: #1a3a6b; border: none; border-radius: 6px; padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
-.template-btn:hover { background: #c5d0e8; }
-.upload-status { font-size: 11px; color: #666; flex: 1; min-width: 200px; }
-.upload-status.ok { color: #2e7d32; font-weight: 700; }
-.upload-status.err { color: #c62828; font-weight: 700; }
-#pdf-text { display: none; background: #fff; border: 1px solid #dde3ee; border-radius: 6px; padding: 10px; font-size: 11px; font-family: 'SF Mono', Menlo, Consolas, monospace; white-space: pre-wrap; max-height: 200px; overflow: auto; margin-top: 8px; color: #444; }
-#pdf-text.show { display: block; }
+/* Parsed data */
+.parsed-section { margin-top: 14px; }
+.parsed-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 14px; }
+.parsed-table th { background: #e8edf5; color: #1a3a6b; font-size: 11px; padding: 6px 8px; text-align: left; border: 1px solid #dde3ee; white-space: nowrap; }
+.parsed-table td { padding: 5px 8px; border: 1px solid #dde3ee; }
+.parsed-table td.num { text-align: right; font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; }
+.parsed-table tr:nth-child(even) { background: #fafbfd; }
+.parsed-table tr.subtotal { background: #e8edf5; font-weight: 700; }
+.parsed-table .source-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; margin-right: 4px; }
+.tag-bs { background: #e3f2fd; color: #1565c0; }
+.tag-pl { background: #fff3e0; color: #e65100; }
+.tag-detail { background: #f3e5f5; color: #7b1fa2; }
+.tag-ledger { background: #e8f5e9; color: #2e7d32; }
+.toggle-btn { background: #e8edf5; border: 1px solid #ccd3e0; border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: #1a3a6b; cursor: pointer; margin-bottom: 8px; }
+.toggle-btn:hover { background: #c5d0e8; }
 
-/* グループ */
-.tax-group { background: #f7f9fc; border: 1px solid #dde3ee; border-radius: 10px; padding: 14px 14px 4px; margin-bottom: 14px; }
-.tax-group-title { font-size: 13px; font-weight: 700; color: #1a3a6b; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #dde3ee; }
-.tax-group-title .group-no { background: #1a3a6b; color: #fff; border-radius: 4px; padding: 2px 10px; font-size: 11px; font-weight: 700; margin-right: 8px; }
-.tax-group-title .group-hint { font-weight: 400; color: #888; font-size: 11px; margin-left: 6px; }
-
-/* 設定 */
-.settings-box { background: #fafbfd; border: 1px solid #dde3ee; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; font-size: 12px; }
-.settings-box label { color: #555; font-weight: 700; }
-.settings-box input[type=number] { width: 100px; padding: 5px 8px; font-size: 12px; }
-
-/* 実行ボタン */
-.run-area { display: flex; justify-content: center; gap: 12px; margin: 20px 0 12px; flex-wrap: wrap; }
+/* Run */
+.run-area { display: flex; justify-content: center; gap: 12px; margin: 20px 0 12px; }
 .btn-run { background: linear-gradient(135deg,#1a3a6b,#2a5298); color: #fff; padding: 14px 36px; font-size: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(26,58,107,.3); }
-.btn-run:hover { box-shadow: 0 6px 16px rgba(26,58,107,.4); }
 
-/* 結果 */
-#check-results { margin-top: 20px; }
+/* Results */
 .result-summary { background: linear-gradient(135deg,#f0f4f9,#e8edf5); border-radius: 10px; padding: 16px 20px; border: 1px solid #dde3ee; margin-bottom: 14px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 .result-summary-main { font-size: 18px; font-weight: 700; color: #1a3a6b; flex: 1; }
 .result-pill { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; }
 .result-pill.ok { background: #e8f5e9; color: #2e7d32; }
 .result-pill.ng { background: #fdecea; color: #c62828; }
-.result-pill.warn { background: #fff3e0; color: #e65100; }
-
 .result-category { font-size: 13px; font-weight: 700; color: #1a3a6b; margin: 18px 0 8px; padding-left: 10px; border-left: 3px solid #2a5298; }
-
-.check-item { background: #fff; border: 1px solid #dde3ee; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
-.check-item.ok { border-left: 4px solid #2e7d32; background: #f1f8f1; }
+.check-item { background: #fff; border: 1px solid #dde3ee; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: start; }
+.check-item.ok { border-left: 4px solid #2e7d32; background: #f6faf6; }
 .check-item.ng { border-left: 4px solid #c62828; background: #fdf3f2; }
-.check-item.warn { border-left: 4px solid #e65100; background: #fff8f0; }
-.check-status { font-size: 22px; font-weight: 700; width: 32px; text-align: center; }
-.check-status.ok { color: #2e7d32; }
-.check-status.ng { color: #c62828; }
-.check-status.warn { color: #e65100; }
-.check-body { min-width: 0; }
-.check-title { font-size: 13px; font-weight: 700; color: #222; margin-bottom: 3px; }
-.check-desc { font-size: 11px; color: #666; line-height: 1.5; }
-.check-numbers { font-size: 11px; color: #555; margin-top: 5px; font-family: 'SF Mono', Menlo, Consolas, monospace; }
-.check-numbers .diff { font-weight: 700; }
-.check-numbers .diff.nz { color: #c62828; }
-.check-numbers .diff.z { color: #2e7d32; }
+.check-mark { font-size: 20px; font-weight: 700; text-align: center; padding-top: 2px; }
+.check-mark.ok { color: #2e7d32; }
+.check-mark.ng { color: #c62828; }
+.check-title { font-size: 12px; font-weight: 700; color: #222; margin-bottom: 2px; }
+.check-detail { font-size: 11px; color: #555; line-height: 1.6; }
+.check-detail .diff { font-weight: 700; color: #c62828; }
+.check-detail .match { font-weight: 700; color: #2e7d32; }
+.check-sub-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; }
+.check-sub-table th { background: #f0f4f9; padding: 3px 6px; text-align: left; border: 1px solid #e0e0e0; font-weight: 700; color: #555; }
+.check-sub-table td { padding: 3px 6px; border: 1px solid #e0e0e0; }
+.check-sub-table td.num { text-align: right; font-family: 'SF Mono', Menlo, Consolas, monospace; }
+.check-sub-table tr.mismatch td { background: #fdecea; }
 
-@media (max-width: 640px) {
-  .check-item { grid-template-columns: auto 1fr; }
-  .check-item .check-numbers-side { grid-column: 1 / -1; }
-}
-
-#save-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1a3a6b; color: #fff; padding: 10px 28px; border-radius: 24px; font-size: 13px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .35s; z-index: 9999; }
-#save-toast.show { opacity: 1; }
-
-.back-link { display: inline-block; margin-bottom: 12px; font-size: 12px; color: #1a3a6b; text-decoration: none; font-weight: 700; }
-.back-link:hover { text-decoration: underline; }
+/* Loading */
+.loading { text-align: center; padding: 20px; color: #888; font-size: 13px; }
+.spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #dde3ee; border-top-color: #1a3a6b; border-radius: 50%; animation: spin .8s linear infinite; margin-right: 8px; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<div id="form-view">
+<div class="wrap">
   <div class="header">
     <div>
       <small>GROWTHLINK TAX ACCOUNTING CORPORATION</small>
-      <h1>法人税申告書　整合性チェック</h1>
+      <h1>決算書類 整合性チェック</h1>
     </div>
-    <button class="btn btn-white" onclick="runChecks()">▶ チェック実行</button>
+    <button class="btn btn-white" onclick="runChecks()" id="run-btn" disabled>▶ チェック実行</button>
   </div>
-
-  <div class="draft-bar">
-    <span class="draft-label">📂 保存済み案件：</span>
-    <select id="draft-select"></select>
-    <button class="dbtn dbtn-save" style="background:#4a6fa5;" onclick="loadDraft(document.getElementById('draft-select').value)">📂 読み込む</button>
-    <button class="dbtn dbtn-save" onclick="saveDraft()">💾 保存</button>
-    <button class="dbtn dbtn-new"  onclick="newDraft()">＋ 新規</button>
-    <button class="dbtn dbtn-del"  onclick="deleteDraft()">🗑 削除</button>
-  </div>
-
   <div class="card">
-
     <div class="guide-banner">
       <strong>📋 使い方</strong>
       <div class="guide-steps">
-        <div class="guide-step"><span>①</span>PDF/CSVをアップロード（任意）</div>
-        <div class="guide-step"><span>②</span>各表の数値を確認・修正</div>
+        <div class="guide-step"><span>①</span>3つのPDFをアップロード</div>
+        <div class="guide-step"><span>②</span>抽出結果を確認</div>
         <div class="guide-step"><span>③</span>▶ チェック実行</div>
-        <div class="guide-step"><span>④</span>差異を確認・修正</div>
+        <div class="guide-step"><span>④</span>差異を確認</div>
       </div>
-      <div style="margin-top:8px; font-size:11px; color:#666;">
-        ※ 単位は<strong>円</strong>。<strong>欠損・マイナスはマイナス符号</strong>で入力。空欄は<strong>0</strong>として扱います。
+      <div style="margin-top:6px;font-size:11px;color:#888;">※ PDFは会計ソフトの「印刷→PDF保存」で出力したテキスト形式に対応。画像PDFは読み取れません。</div>
+    </div>
+
+    <div class="section-title">① PDFアップロード</div>
+    <div class="upload-grid">
+      <div class="upload-box" id="drop-kessan" onclick="this.querySelector('input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'kessan')">
+        <input type="file" accept="application/pdf" onchange="handleFile(event,'kessan')">
+        <div class="icon">📊</div>
+        <div class="label">決算報告書</div>
+        <div class="status" id="status-kessan">クリック or ドラッグ</div>
+      </div>
+      <div class="upload-box" id="drop-uchiwake" onclick="this.querySelector('input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'uchiwake')">
+        <input type="file" accept="application/pdf" onchange="handleFile(event,'uchiwake')">
+        <div class="icon">📑</div>
+        <div class="label">科目内訳書</div>
+        <div class="status" id="status-uchiwake">クリック or ドラッグ</div>
+      </div>
+      <div class="upload-box" id="drop-motochou" onclick="this.querySelector('input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'motochou')">
+        <input type="file" accept="application/pdf" onchange="handleFile(event,'motochou')">
+        <div class="icon">📒</div>
+        <div class="label">総勘定元帳</div>
+        <div class="status" id="status-motochou">クリック or ドラッグ</div>
       </div>
     </div>
 
-    <!-- 案件情報 -->
-    <div class="section-title">① 案件情報</div>
-    <div class="grid3">
-      <div class="field">
-        <label>法人名</label>
-        <input type="text" id="meta_company" placeholder="株式会社○○">
-      </div>
-      <div class="field">
-        <label>事業年度（自）</label>
-        <input type="text" id="meta_period_from" placeholder="2024-04-01">
-      </div>
-      <div class="field">
-        <label>事業年度（至）</label>
-        <input type="text" id="meta_period_to" placeholder="2025-03-31">
-      </div>
-    </div>
-
-    <!-- アップロード -->
-    <div class="section-title">📥 ファイルから取り込み <small>（任意・うまく抽出できない場合は手入力でOK）</small></div>
-    <div class="upload-area">
-      <div class="upload-area-title">📄 CSVテンプレートから一括入力（推奨）</div>
-      <div class="upload-row">
-        <button type="button" class="template-btn" onclick="downloadCsvTemplate()">⬇️ テンプレートCSV ダウンロード</button>
-        <label class="file-label">
-          📂 CSVを読み込む
-          <input type="file" accept=".csv,text/csv" onchange="handleCsv(event)">
-        </label>
-        <span class="upload-status" id="csv-status">未読込</span>
-      </div>
-    </div>
-    <div class="upload-area">
-      <div class="upload-area-title">📑 PDFテキスト抽出（参照用）</div>
-      <div class="upload-row">
-        <label class="file-label">
-          📂 PDFを読み込む
-          <input type="file" accept="application/pdf" onchange="handlePdf(event)">
-        </label>
-        <button type="button" class="template-btn" onclick="togglePdfText()">📋 抽出テキスト表示/非表示</button>
-        <span class="upload-status" id="pdf-status">未読込</span>
-      </div>
-      <div id="pdf-text"></div>
-      <div style="font-size:10px; color:#888; margin-top:6px;">
-        ※ PDFテキストは参照用です。金額は申告書ソフトの様式によって配置が異なるため、自動マッピングは行いません。表示されたテキストを参考に、下の入力欄に転記してください。
-      </div>
-    </div>
-
-    <!-- 設定 -->
-    <div class="section-title">⚙️ チェック設定</div>
-    <div class="settings-box">
-      <label>許容差額（円）</label>
-      <input type="number" id="tolerance" value="1" min="0">
-      <label style="margin-left:14px;">
-        <input type="checkbox" id="strict_capital" checked style="vertical-align: middle;">
-        資本金等の額もチェック
-      </label>
-    </div>
-
-    <!-- 決算書 -->
-    <div class="section-title">② 決算書（損益計算書・貸借対照表）</div>
-    <div class="tax-group">
-      <div class="tax-group-title"><span class="group-no">P/L</span>損益計算書<span class="group-hint">税引前当期純利益・税金費用・当期純利益</span></div>
-      <div class="grid3">
-        <div class="field"><label>税引前当期純利益<span class="hint">（参考）</span></label><input type="number" id="ps_pretax_income" placeholder="0"></div>
-        <div class="field"><label>法人税、住民税及び事業税</label><input type="number" id="ps_tax_expense" placeholder="0"></div>
-        <div class="field"><label>当期純利益<span class="hint">★</span></label><input type="number" id="ps_net_income" placeholder="0"></div>
-      </div>
-    </div>
-    <div class="tax-group">
-      <div class="tax-group-title"><span class="group-no">B/S</span>貸借対照表<span class="group-hint">純資産・未払法人税等</span></div>
-      <div class="grid3">
-        <div class="field"><label>資本金</label><input type="number" id="bs_capital" placeholder="0"></div>
-        <div class="field"><label>資本剰余金</label><input type="number" id="bs_capital_surplus" placeholder="0"></div>
-        <div class="field"><label>利益剰余金 合計<span class="hint">（参考）</span></label><input type="number" id="bs_retained_total" placeholder="0"></div>
-        <div class="field"><label>繰越利益剰余金<span class="hint">★</span></label><input type="number" id="bs_retained" placeholder="0"></div>
-        <div class="field"><label>未払法人税等<span class="hint">★</span></label><input type="number" id="bs_unpaid_tax" placeholder="0"></div>
-        <div class="field"><label>未払消費税等<span class="hint">（参考）</span></label><input type="number" id="bs_unpaid_ct" placeholder="0"></div>
-      </div>
-    </div>
-
-    <!-- 別表四 -->
-    <div class="section-title">③ 別表四（所得の金額の計算）</div>
-    <div class="tax-group">
-      <div class="grid3">
-        <div class="field"><label>[1] 当期利益又は当期欠損の額<span class="hint">★</span></label><input type="number" id="bs4_net_income" placeholder="0"></div>
-        <div class="field"><label>[2] 損金経理をした法人税及び地方法人税</label><input type="number" id="bs4_corp_tax" placeholder="0"></div>
-        <div class="field"><label>[3] 損金経理をした道府県民税及び市町村民税</label><input type="number" id="bs4_resident_tax" placeholder="0"></div>
-        <div class="field"><label>[4] 損金経理をした納税充当金<span class="hint">★</span></label><input type="number" id="bs4_tax_reserve" placeholder="0"></div>
-        <div class="field"><label>[5] 損金経理をした附帯税等</label><input type="number" id="bs4_penalty_tax" placeholder="0"></div>
-        <div class="field"><label>加算 計</label><input type="number" id="bs4_total_add" placeholder="0"></div>
-        <div class="field"><label>減算 計</label><input type="number" id="bs4_total_sub" placeholder="0"></div>
-        <div class="field"><label>所得金額又は欠損金額</label><input type="number" id="bs4_taxable_income" placeholder="0"></div>
-      </div>
-    </div>
-
-    <!-- 別表五(一) -->
-    <div class="section-title">④ 別表五(一)（利益積立金額・資本金等の額の計算）</div>
-    <div class="tax-group">
-      <div class="tax-group-title"><span class="group-no">Ⅰ</span>利益積立金額の計算<span class="group-hint">期首・期末の重要項目</span></div>
-      <div class="grid4">
-        <div class="field"><label>期首 合計</label><input type="number" id="bs5_1_open_total" placeholder="0"></div>
-        <div class="field"><label>期末 合計</label><input type="number" id="bs5_1_end_total" placeholder="0"></div>
-        <div class="field"><label>繰越損益金 期首</label><input type="number" id="bs5_1_carry_open" placeholder="0"></div>
-        <div class="field"><label>繰越損益金 期末<span class="hint">★</span></label><input type="number" id="bs5_1_carry_end" placeholder="0"></div>
-        <div class="field"><label>納税充当金 期首</label><input type="number" id="bs5_1_tax_reserve_open" placeholder="0"></div>
-        <div class="field"><label>納税充当金 期末<span class="hint">★</span></label><input type="number" id="bs5_1_tax_reserve_end" placeholder="0"></div>
-        <div class="field"><label>未納法人税等 期末<span class="hint">（マイナス入力）</span></label><input type="number" id="bs5_1_unpaid_corp_end" placeholder="0"></div>
-        <div class="field"><label>未納道府県民税 期末</label><input type="number" id="bs5_1_unpaid_pref_end" placeholder="0"></div>
-        <div class="field"><label>未納市町村民税 期末</label><input type="number" id="bs5_1_unpaid_city_end" placeholder="0"></div>
-      </div>
-    </div>
-    <div class="tax-group">
-      <div class="tax-group-title"><span class="group-no">Ⅱ</span>資本金等の額の計算</div>
-      <div class="grid2">
-        <div class="field"><label>期首 合計</label><input type="number" id="bs5_1_capital_open" placeholder="0"></div>
-        <div class="field"><label>期末 合計<span class="hint">★</span></label><input type="number" id="bs5_1_capital_end" placeholder="0"></div>
-      </div>
-    </div>
-
-    <!-- 別表五(二) -->
-    <div class="section-title">⑤ 別表五(二)（租税公課の納付状況）</div>
-    <div class="tax-group">
-      <div class="tax-group-title"><span class="group-no">納税充当金</span>増減計算</div>
-      <div class="grid4">
-        <div class="field"><label>期首納税充当金</label><input type="number" id="bs5_2_reserve_open" placeholder="0"></div>
-        <div class="field"><label>当期繰入額<span class="hint">★</span></label><input type="number" id="bs5_2_reserve_in" placeholder="0"></div>
-        <div class="field"><label>当期取崩額 計</label><input type="number" id="bs5_2_reserve_out" placeholder="0"></div>
-        <div class="field"><label>期末納税充当金<span class="hint">★</span></label><input type="number" id="bs5_2_reserve_end" placeholder="0"></div>
-      </div>
-    </div>
-    <div class="tax-group">
-      <div class="tax-group-title"><span class="group-no">税目別</span>当期発生・納付額<span class="group-hint">損金経理納付＝損金算入</span></div>
-      <div class="grid4">
-        <div class="field"><label>法人税 当期発生</label><input type="number" id="bs5_2_corp_current" placeholder="0"></div>
-        <div class="field"><label>法人税 損金経理納付</label><input type="number" id="bs5_2_corp_paid_loss" placeholder="0"></div>
-        <div class="field"><label>住民税 当期発生</label><input type="number" id="bs5_2_resident_current" placeholder="0"></div>
-        <div class="field"><label>住民税 損金経理納付</label><input type="number" id="bs5_2_resident_paid_loss" placeholder="0"></div>
-        <div class="field"><label>事業税 当期発生</label><input type="number" id="bs5_2_business_current" placeholder="0"></div>
-        <div class="field"><label>事業税 納付額（損金算入）</label><input type="number" id="bs5_2_business_paid" placeholder="0"></div>
-        <div class="field"><label>附帯税等 損金経理</label><input type="number" id="bs5_2_penalty_paid_loss" placeholder="0"></div>
-        <div class="field"><label>未納法人税等 期末 計<span class="hint">（プラス入力）</span></label><input type="number" id="bs5_2_unpaid_end" placeholder="0"></div>
-      </div>
-    </div>
-
-    <!-- 消費税 -->
-    <div class="section-title">⑥ 地方税・消費税（参考整合）</div>
-    <div class="tax-group">
-      <div class="grid3">
-        <div class="field"><label>消費税 中間納付額</label><input type="number" id="ct_intermediate" placeholder="0"></div>
-        <div class="field"><label>消費税 確定納付額（未払）</label><input type="number" id="ct_final" placeholder="0"></div>
-        <div class="field"><label>事業税 中間納付（P/L損金）</label><input type="number" id="biz_intermediate" placeholder="0"></div>
-      </div>
-    </div>
-
-    <!-- 実行 -->
-    <div class="run-area">
-      <button class="btn btn-run" onclick="runChecks()">▶ 整合性チェック実行</button>
-    </div>
-
-    <!-- 結果 -->
+    <div id="parsed-area"></div>
     <div id="check-results"></div>
-
   </div>
 </div>
 
-<div id="save-toast">✅ 保存しました</div>
-
 <script>
 /* ============================================================
-   入力フィールド定義
+   State
    ============================================================ */
-const FIELDS = [
-  // メタ
-  'meta_company','meta_period_from','meta_period_to',
-  // P/L
-  'ps_pretax_income','ps_tax_expense','ps_net_income',
-  // B/S
-  'bs_capital','bs_capital_surplus','bs_retained_total','bs_retained','bs_unpaid_tax','bs_unpaid_ct',
-  // 別表四
-  'bs4_net_income','bs4_corp_tax','bs4_resident_tax','bs4_tax_reserve','bs4_penalty_tax',
-  'bs4_total_add','bs4_total_sub','bs4_taxable_income',
-  // 別表五(一)
-  'bs5_1_open_total','bs5_1_end_total','bs5_1_carry_open','bs5_1_carry_end',
-  'bs5_1_tax_reserve_open','bs5_1_tax_reserve_end',
-  'bs5_1_unpaid_corp_end','bs5_1_unpaid_pref_end','bs5_1_unpaid_city_end',
-  'bs5_1_capital_open','bs5_1_capital_end',
-  // 別表五(二)
-  'bs5_2_reserve_open','bs5_2_reserve_in','bs5_2_reserve_out','bs5_2_reserve_end',
-  'bs5_2_corp_current','bs5_2_corp_paid_loss',
-  'bs5_2_resident_current','bs5_2_resident_paid_loss',
-  'bs5_2_business_current','bs5_2_business_paid',
-  'bs5_2_penalty_paid_loss','bs5_2_unpaid_end',
-  // 消費税
-  'ct_intermediate','ct_final','biz_intermediate',
-];
-
-const NUMERIC_FIELDS = FIELDS.filter(f => !f.startsWith('meta_'));
+const state = { kessan: null, uchiwake: null, motochou: null };
 
 /* ============================================================
-   ユーティリティ
+   PDF.js Loader
    ============================================================ */
-function getVal(id) {
-  const el = document.getElementById(id);
-  if (!el) return 0;
-  if (el.type === 'text') return el.value || '';
-  const v = parseFloat(el.value);
-  return isNaN(v) ? 0 : v;
-}
-function setVal(id, v) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (el.type === 'text') el.value = v == null ? '' : String(v);
-  else el.value = (v === '' || v == null) ? '' : v;
-}
-function fmt(n) {
-  if (typeof n !== 'number' || isNaN(n)) return '-';
-  return n.toLocaleString('ja-JP') + '円';
-}
-function toast(msg) {
-  const t = document.getElementById('save-toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.classList.remove('show'), 1800);
-}
-
-/* ============================================================
-   整合性チェックルール
-   ============================================================ */
-function runChecks() {
-  const tol = Math.max(0, getVal('tolerance'));
-  const v = {};
-  NUMERIC_FIELDS.forEach(f => v[f] = getVal(f));
-
-  const checks = [];
-
-  // === ① 別表四 vs 損益計算書 ===
-  checks.push({
-    cat: '① 別表四 ↔ 損益計算書',
-    title: '別表四[1]「当期利益又は当期欠損の額」= 損益計算書「当期純利益」',
-    desc: '別表四の出発点が決算書の当期純利益と一致しているか。',
-    expected: v.ps_net_income, expectedLabel: 'P/L 当期純利益',
-    actual: v.bs4_net_income,  actualLabel: '別表四[1]',
-  });
-
-  const bs4_taxAdd = v.bs4_corp_tax + v.bs4_resident_tax + v.bs4_tax_reserve + v.bs4_penalty_tax;
-  checks.push({
-    cat: '① 別表四 ↔ 損益計算書',
-    title: '損金経理した法人税等([2]+[3]+[4]+[5]) ≈ P/L「法人税等」',
-    desc: '損金経理した法人税・住民税・納税充当金・附帯税の合計が、P/L「法人税、住民税及び事業税」と概ね一致するか。事業税は損金経理納付分のみ加算対象なので注意。',
-    expected: v.ps_tax_expense, expectedLabel: 'P/L 法人税等',
-    actual: bs4_taxAdd,         actualLabel: '別表四 加算合計',
-    softTol: true, // 事業税分のズレを許容
-  });
-
-  // === ② 別表五(一) ↔ 貸借対照表 ===
-  checks.push({
-    cat: '② 別表五(一) ↔ 貸借対照表',
-    title: '繰越損益金（期末）= 繰越利益剰余金（B/S）',
-    desc: '別表五(一) Ⅰ「繰越損益金（損は赤）」期末残高が、貸借対照表の繰越利益剰余金と一致するか。',
-    expected: v.bs_retained,        expectedLabel: 'B/S 繰越利益剰余金',
-    actual: v.bs5_1_carry_end,      actualLabel: '別表五(一) 繰越損益金 期末',
-  });
-
-  checks.push({
-    cat: '② 別表五(一) ↔ 貸借対照表',
-    title: '納税充当金（期末）= 未払法人税等（B/S）',
-    desc: '別表五(一) Ⅰ「納税充当金」期末残高が、貸借対照表の未払法人税等と一致するか。',
-    expected: v.bs_unpaid_tax,         expectedLabel: 'B/S 未払法人税等',
-    actual: v.bs5_1_tax_reserve_end,   actualLabel: '別表五(一) 納税充当金 期末',
-  });
-
-  if (document.getElementById('strict_capital').checked) {
-    checks.push({
-      cat: '② 別表五(一) ↔ 貸借対照表',
-      title: '資本金等の額（期末）= 資本金 + 資本剰余金（B/S）',
-      desc: '別表五(一) Ⅱ「資本金等の額」期末合計が、B/Sの資本金＋資本剰余金と一致するか。自己株式取得等があれば差が出ます。',
-      expected: v.bs_capital + v.bs_capital_surplus, expectedLabel: 'B/S 資本金+資本剰余金',
-      actual: v.bs5_1_capital_end,                   actualLabel: '別表五(一) Ⅱ 期末',
-    });
-  }
-
-  // 利益積立金 期末 整合：期首 + (当期所得 + 損金算入未納税 - 当期発生未納税...) の検算は複雑なので
-  // ここでは「期末合計 - 期首合計 ≈ 当期純利益 + 損金経理納税充当金 - 未納法人税等の純増」のラフ検算
-  const bs5_1_diff = v.bs5_1_end_total - v.bs5_1_open_total;
-  const bs5_1_diff_expected = v.bs4_net_income + v.bs4_tax_reserve
-                              - (v.bs5_1_unpaid_corp_end + v.bs5_1_unpaid_pref_end + v.bs5_1_unpaid_city_end);
-  // 未納法人税等は通常マイナス入力されるため、ここでは符号を慎重に
-  // 概算チェックなので緩めの許容
-  checks.push({
-    cat: '② 別表五(一) 内部整合',
-    title: '利益積立金額の期中増減（概算検算）',
-    desc: '期末合計 − 期首合計 ≈ 当期利益 + 損金経理納税充当金 − 未納法人税等期末（マイナス入力前提）。複雑な留保項目がある場合は誤差が出ます。',
-    expected: bs5_1_diff_expected, expectedLabel: '理論増減額',
-    actual: bs5_1_diff,            actualLabel: '実増減額',
-    softTol: true,
-  });
-
-  // === ③ 別表五(二) 内部整合 ===
-  const reserve_calc = v.bs5_2_reserve_open + v.bs5_2_reserve_in - v.bs5_2_reserve_out;
-  checks.push({
-    cat: '③ 別表五(二) 内部整合',
-    title: '納税充当金：期首 + 繰入 − 取崩 = 期末',
-    desc: '別表五(二)「納税充当金の計算」欄の増減が整合しているか。',
-    expected: v.bs5_2_reserve_end, expectedLabel: '期末納税充当金',
-    actual: reserve_calc,          actualLabel: '計算値',
-  });
-
-  // === ④ 別表五(二) ↔ 別表四 ===
-  checks.push({
-    cat: '④ 別表五(二) ↔ 別表四',
-    title: '納税充当金 当期繰入額 = 別表四[4]「損金経理をした納税充当金」',
-    desc: '別表五(二)「納税充当金の計算」当期繰入額と、別表四[4]の損金経理した納税充当金が一致するか。',
-    expected: v.bs4_tax_reserve,   expectedLabel: '別表四[4]',
-    actual: v.bs5_2_reserve_in,    actualLabel: '別表五(二) 繰入額',
-  });
-
-  checks.push({
-    cat: '④ 別表五(二) ↔ 別表四',
-    title: '法人税 損金経理納付額 = 別表四[2]',
-    desc: '別表五(二)「法人税及び地方法人税」損金経理納付の額と、別表四[2]の損金経理した法人税及び地方法人税が一致するか。',
-    expected: v.bs4_corp_tax,             expectedLabel: '別表四[2]',
-    actual: v.bs5_2_corp_paid_loss,       actualLabel: '別表五(二) 法人税 損金経理',
-  });
-
-  checks.push({
-    cat: '④ 別表五(二) ↔ 別表四',
-    title: '住民税 損金経理納付額 = 別表四[3]',
-    desc: '別表五(二)「道府県民税＋市町村民税」損金経理納付の合計と、別表四[3]が一致するか。',
-    expected: v.bs4_resident_tax,         expectedLabel: '別表四[3]',
-    actual: v.bs5_2_resident_paid_loss,   actualLabel: '別表五(二) 住民税 損金経理',
-  });
-
-  checks.push({
-    cat: '④ 別表五(二) ↔ 別表四',
-    title: '附帯税等 損金経理 = 別表四[5]',
-    desc: '別表五(二)に記載した附帯税等の損金経理納付額が別表四[5]と一致するか。',
-    expected: v.bs4_penalty_tax,          expectedLabel: '別表四[5]',
-    actual: v.bs5_2_penalty_paid_loss,    actualLabel: '別表五(二) 附帯税 損金経理',
-  });
-
-  // === ⑤ 別表五(二) ↔ 貸借対照表 ===
-  checks.push({
-    cat: '⑤ 別表五(二) ↔ 貸借対照表',
-    title: '期末納税充当金 = 未払法人税等（B/S）',
-    desc: '別表五(二) 期末納税充当金が、貸借対照表の未払法人税等と一致するか。',
-    expected: v.bs_unpaid_tax,        expectedLabel: 'B/S 未払法人税等',
-    actual: v.bs5_2_reserve_end,      actualLabel: '別表五(二) 期末',
-  });
-
-  // === ⑥ 別表五(一) ↔ 別表五(二) ===
-  checks.push({
-    cat: '⑥ 別表五(一) ↔ 別表五(二)',
-    title: '納税充当金 期末（別表五(一) = 別表五(二)）',
-    desc: '別表五(一)「納税充当金」期末と、別表五(二) 期末納税充当金が一致するか。',
-    expected: v.bs5_2_reserve_end,        expectedLabel: '別表五(二) 期末',
-    actual: v.bs5_1_tax_reserve_end,      actualLabel: '別表五(一) 期末',
-  });
-
-  // 未納法人税等の整合（別表五(一) は通常マイナス、別表五(二) はプラスで持つので絶対値比較）
-  const bs5_1_unpaid_abs = Math.abs(v.bs5_1_unpaid_corp_end) + Math.abs(v.bs5_1_unpaid_pref_end) + Math.abs(v.bs5_1_unpaid_city_end);
-  checks.push({
-    cat: '⑥ 別表五(一) ↔ 別表五(二)',
-    title: '未納法人税等 期末（絶対値で一致）',
-    desc: '別表五(一) Ⅰ 未納法人税等の期末（マイナス記載）の絶対値合計が、別表五(二) 未納法人税等期末計と一致するか。',
-    expected: v.bs5_2_unpaid_end,         expectedLabel: '別表五(二) 未納末',
-    actual: bs5_1_unpaid_abs,             actualLabel: '別表五(一) 未納末 |絶対値|',
-  });
-
-  // === ⑦ 地方税・消費税 ===
-  if (v.ct_final !== 0 || v.bs_unpaid_ct !== 0) {
-    checks.push({
-      cat: '⑦ 消費税 整合',
-      title: '消費税 確定納付額 ≈ 未払消費税等（B/S）',
-      desc: '消費税の確定（未払）納付額が、B/Sの未払消費税等と概ね一致するか。中間還付や経過勘定があるとズレます。',
-      expected: v.bs_unpaid_ct,    expectedLabel: 'B/S 未払消費税等',
-      actual: v.ct_final,          actualLabel: '消費税 確定納付額',
-      softTol: true,
-    });
-  }
-
-  // === ⑧ 別表四 計算整合 ===
-  const bs4_calc = v.bs4_net_income + v.bs4_total_add - v.bs4_total_sub;
-  checks.push({
-    cat: '⑧ 別表四 内部整合',
-    title: '所得金額 = [1] + 加算計 − 減算計',
-    desc: '別表四の所得金額（最終）が、当期利益 + 加算計 − 減算計と一致するか。',
-    expected: v.bs4_taxable_income, expectedLabel: '所得金額（記載値）',
-    actual: bs4_calc,               actualLabel: '計算値',
-  });
-
-  // 結果を表示
-  renderResults(checks, tol);
-}
-
-function renderResults(checks, tol) {
-  const wrap = document.getElementById('check-results');
-  wrap.innerHTML = '';
-
-  let okCount = 0, ngCount = 0, warnCount = 0;
-  const results = checks.map(c => {
-    const diff = (c.actual || 0) - (c.expected || 0);
-    const absDiff = Math.abs(diff);
-    const effectiveTol = c.softTol ? Math.max(tol, 1000) : tol;
-    let status;
-    if (absDiff <= tol) { status = 'ok'; okCount++; }
-    else if (c.softTol && absDiff <= effectiveTol) { status = 'warn'; warnCount++; }
-    else { status = 'ng'; ngCount++; }
-    return { ...c, diff, status };
-  });
-
-  // サマリ
-  const summary = document.createElement('div');
-  summary.className = 'result-summary';
-  const total = results.length;
-  let pillClass = 'ok', pillText = '✅ すべて一致';
-  if (ngCount > 0) { pillClass = 'ng'; pillText = `❌ ${ngCount}件 NG`; }
-  else if (warnCount > 0) { pillClass = 'warn'; pillText = `⚠️ ${warnCount}件 要確認`; }
-  summary.innerHTML = `
-    <div class="result-summary-main">チェック結果：${total}件中 ✅ ${okCount} ⚠️ ${warnCount} ❌ ${ngCount}</div>
-    <div class="result-pill ${pillClass}">${pillText}</div>
-  `;
-  wrap.appendChild(summary);
-
-  // カテゴリ別
-  const cats = [...new Set(results.map(r => r.cat))];
-  for (const cat of cats) {
-    const head = document.createElement('div');
-    head.className = 'result-category';
-    head.textContent = cat;
-    wrap.appendChild(head);
-    for (const r of results.filter(x => x.cat === cat)) {
-      const item = document.createElement('div');
-      item.className = 'check-item ' + r.status;
-      const mark = r.status === 'ok' ? '✓' : r.status === 'warn' ? '!' : '✗';
-      const diffClass = r.diff === 0 ? 'z' : 'nz';
-      item.innerHTML = `
-        <div class="check-status ${r.status}">${mark}</div>
-        <div class="check-body">
-          <div class="check-title">${r.title}</div>
-          <div class="check-desc">${r.desc}</div>
-          <div class="check-numbers">
-            ${r.expectedLabel}: <strong>${fmt(r.expected)}</strong>　／
-            ${r.actualLabel}: <strong>${fmt(r.actual)}</strong>　／
-            差額: <span class="diff ${diffClass}">${r.diff > 0 ? '+' : ''}${fmt(r.diff)}</span>
-          </div>
-        </div>
-      `;
-      wrap.appendChild(item);
-    }
-  }
-
-  // 上にスクロール
-  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-/* ============================================================
-   CSV テンプレート / 取込
-   ============================================================ */
-function downloadCsvTemplate() {
-  const labels = {
-    meta_company: '法人名',
-    meta_period_from: '事業年度（自）',
-    meta_period_to: '事業年度（至）',
-    ps_pretax_income: 'P/L 税引前当期純利益',
-    ps_tax_expense: 'P/L 法人税、住民税及び事業税',
-    ps_net_income: 'P/L 当期純利益',
-    bs_capital: 'B/S 資本金',
-    bs_capital_surplus: 'B/S 資本剰余金',
-    bs_retained_total: 'B/S 利益剰余金 合計',
-    bs_retained: 'B/S 繰越利益剰余金',
-    bs_unpaid_tax: 'B/S 未払法人税等',
-    bs_unpaid_ct: 'B/S 未払消費税等',
-    bs4_net_income: '別表四[1] 当期利益又は当期欠損の額',
-    bs4_corp_tax: '別表四[2] 損金経理した法人税及び地方法人税',
-    bs4_resident_tax: '別表四[3] 損金経理した道府県民税及び市町村民税',
-    bs4_tax_reserve: '別表四[4] 損金経理した納税充当金',
-    bs4_penalty_tax: '別表四[5] 損金経理した附帯税等',
-    bs4_total_add: '別表四 加算計',
-    bs4_total_sub: '別表四 減算計',
-    bs4_taxable_income: '別表四 所得金額',
-    bs5_1_open_total: '別表五(一)Ⅰ 期首 合計',
-    bs5_1_end_total: '別表五(一)Ⅰ 期末 合計',
-    bs5_1_carry_open: '別表五(一)Ⅰ 繰越損益金 期首',
-    bs5_1_carry_end: '別表五(一)Ⅰ 繰越損益金 期末',
-    bs5_1_tax_reserve_open: '別表五(一)Ⅰ 納税充当金 期首',
-    bs5_1_tax_reserve_end: '別表五(一)Ⅰ 納税充当金 期末',
-    bs5_1_unpaid_corp_end: '別表五(一)Ⅰ 未納法人税等 期末',
-    bs5_1_unpaid_pref_end: '別表五(一)Ⅰ 未納道府県民税 期末',
-    bs5_1_unpaid_city_end: '別表五(一)Ⅰ 未納市町村民税 期末',
-    bs5_1_capital_open: '別表五(一)Ⅱ 期首 合計',
-    bs5_1_capital_end: '別表五(一)Ⅱ 期末 合計',
-    bs5_2_reserve_open: '別表五(二) 期首納税充当金',
-    bs5_2_reserve_in: '別表五(二) 当期繰入額',
-    bs5_2_reserve_out: '別表五(二) 当期取崩額 計',
-    bs5_2_reserve_end: '別表五(二) 期末納税充当金',
-    bs5_2_corp_current: '別表五(二) 法人税 当期発生',
-    bs5_2_corp_paid_loss: '別表五(二) 法人税 損金経理納付',
-    bs5_2_resident_current: '別表五(二) 住民税 当期発生',
-    bs5_2_resident_paid_loss: '別表五(二) 住民税 損金経理納付',
-    bs5_2_business_current: '別表五(二) 事業税 当期発生',
-    bs5_2_business_paid: '別表五(二) 事業税 納付額',
-    bs5_2_penalty_paid_loss: '別表五(二) 附帯税等 損金経理',
-    bs5_2_unpaid_end: '別表五(二) 未納法人税等 期末計',
-    ct_intermediate: '消費税 中間納付額',
-    ct_final: '消費税 確定納付額',
-    biz_intermediate: '事業税 中間納付',
-  };
-  const lines = ['key,label,value'];
-  for (const f of FIELDS) {
-    const label = labels[f] || f;
-    lines.push(`${f},"${label}",`);
-  }
-  const csv = '﻿' + lines.join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'tax_check_template.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('📄 テンプレートをダウンロードしました');
-}
-
-function handleCsv(ev) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  const status = document.getElementById('csv-status');
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      let text = e.target.result;
-      if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-      const rows = parseCsv(text);
-      let loaded = 0, skipped = 0;
-      const fieldSet = new Set(FIELDS);
-      for (const row of rows) {
-        if (!row.length) continue;
-        const key = (row[0] || '').trim();
-        if (!key || key === 'key' || !fieldSet.has(key)) { skipped++; continue; }
-        // value は最後の列、または 2列目（label無しテンプレ対応）
-        const val = row.length >= 3 ? (row[2] || '').trim() : (row[1] || '').trim();
-        if (val === '') { continue; }
-        setVal(key, val);
-        loaded++;
-      }
-      status.textContent = `✅ ${file.name}：${loaded} 件読込（${skipped} 件スキップ）`;
-      status.className = 'upload-status ok';
-      toast(`📥 CSV読込：${loaded}件`);
-    } catch (err) {
-      status.textContent = `❌ 読込失敗：${err.message}`;
-      status.className = 'upload-status err';
-    }
-  };
-  reader.readAsText(file, 'UTF-8');
-  ev.target.value = '';
-}
-
-function parseCsv(text) {
-  const rows = [];
-  let cur = [], cell = '', inQ = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inQ) {
-      if (c === '"') {
-        if (text[i+1] === '"') { cell += '"'; i++; }
-        else inQ = false;
-      } else cell += c;
-    } else {
-      if (c === '"') inQ = true;
-      else if (c === ',') { cur.push(cell); cell = ''; }
-      else if (c === '\n') { cur.push(cell); rows.push(cur); cur = []; cell = ''; }
-      else if (c === '\r') {}
-      else cell += c;
-    }
-  }
-  if (cell.length || cur.length) { cur.push(cell); rows.push(cur); }
-  return rows;
-}
-
-/* ============================================================
-   PDF テキスト抽出（PDF.js 動的ロード）
-   ============================================================ */
-let pdfjsLoading = null;
+let pdfjsReady = null;
 function loadPdfJs() {
-  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
-  if (pdfjsLoading) return pdfjsLoading;
-  pdfjsLoading = new Promise((resolve, reject) => {
+  if (window.pdfjsLib) return Promise.resolve();
+  if (pdfjsReady) return pdfjsReady;
+  pdfjsReady = new Promise((res, rej) => {
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
     s.onload = () => {
-      if (window.pdfjsLib) {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(window.pdfjsLib);
-      } else reject(new Error('PDF.js が初期化されませんでした'));
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      res();
     };
-    s.onerror = () => reject(new Error('PDF.js のロードに失敗しました'));
+    s.onerror = () => rej(new Error('PDF.js の読込に失敗'));
     document.head.appendChild(s);
   });
-  return pdfjsLoading;
+  return pdfjsReady;
 }
 
-async function handlePdf(ev) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  const status = document.getElementById('pdf-status');
-  status.textContent = '⏳ PDF.js を読み込み中...';
-  status.className = 'upload-status';
-  try {
-    const lib = await loadPdfJs();
-    status.textContent = '⏳ テキスト抽出中...';
-    const buf = await file.arrayBuffer();
-    const pdf = await lib.getDocument({ data: buf }).promise;
-    let allText = '';
-    for (let p = 1; p <= pdf.numPages; p++) {
-      const page = await pdf.getPage(p);
-      const content = await page.getTextContent();
-      allText += `--- Page ${p} ---\n`;
-      allText += content.items.map(i => i.str).join(' ') + '\n\n';
+async function extractText(file) {
+  await loadPdfJs();
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    let lines = [];
+    let lastY = null;
+    let curLine = [];
+    for (const item of content.items) {
+      const y = Math.round(item.transform[5]);
+      if (lastY !== null && Math.abs(y - lastY) > 3) {
+        lines.push(curLine);
+        curLine = [];
+      }
+      curLine.push({ str: item.str, x: Math.round(item.transform[4]), y });
+      lastY = y;
     }
-    const box = document.getElementById('pdf-text');
-    box.textContent = allText || '(テキスト抽出できませんでした。画像PDFの可能性があります)';
-    box.classList.add('show');
-    status.textContent = `✅ ${file.name}：${pdf.numPages} ページ抽出`;
-    status.className = 'upload-status ok';
+    if (curLine.length) lines.push(curLine);
+    pages.push(lines);
+  }
+  return pages;
+}
+
+function pageLinesToText(pages) {
+  return pages.map(lines =>
+    lines.map(items => items.map(i => i.str).join(' ')).join('\n')
+  ).join('\n--- PAGE ---\n');
+}
+
+/* ============================================================
+   File Handling
+   ============================================================ */
+function handleDrop(e, type) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') processFile(file, type);
+}
+function handleFile(e, type) {
+  const file = e.target.files[0];
+  if (file) processFile(file, type);
+}
+
+async function processFile(file, type) {
+  const box = document.getElementById('drop-' + type);
+  const status = document.getElementById('status-' + type);
+  status.textContent = '⏳ 読取中...';
+  box.classList.remove('loaded');
+  try {
+    const pages = await extractText(file);
+    const text = pageLinesToText(pages);
+    let parsed;
+    if (type === 'kessan') parsed = parseKessan(text, pages);
+    else if (type === 'uchiwake') parsed = parseUchiwake(text, pages);
+    else parsed = parseMotochou(text, pages);
+    state[type] = parsed;
+    status.textContent = '✅ ' + file.name;
+    box.classList.add('loaded');
+    renderParsed();
+    updateRunBtn();
   } catch (err) {
-    status.textContent = `❌ ${err.message}`;
-    status.className = 'upload-status err';
-  } finally {
-    ev.target.value = '';
+    status.textContent = '❌ ' + err.message;
+    console.error(err);
   }
 }
 
-function togglePdfText() {
-  document.getElementById('pdf-text').classList.toggle('show');
+function updateRunBtn() {
+  const btn = document.getElementById('run-btn');
+  const count = [state.kessan, state.uchiwake, state.motochou].filter(Boolean).length;
+  btn.disabled = count < 2;
+  btn.textContent = count < 2 ? `▶ チェック実行（${count}/3 読込済）` : '▶ チェック実行';
 }
 
 /* ============================================================
-   下書き保存（localStorage）
+   Number utilities
    ============================================================ */
-const STORAGE_KEY = 'tax-check-drafts-v1';
+function parseNum(s) {
+  if (!s) return 0;
+  s = String(s).replace(/[,，　\s]/g, '').replace(/△/g, '-');
+  const m = s.match(/-?[\d]+/);
+  return m ? parseInt(m[0], 10) : 0;
+}
+function fmt(n) {
+  if (n == null || isNaN(n)) return '-';
+  return n.toLocaleString('ja-JP');
+}
+function cleanName(s) {
+  return s.replace(/[\s　]+/g, '').replace(/[【】\[\]]/g, '').trim();
+}
 
-function getDrafts() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-  catch { return {}; }
-}
-function setDrafts(d) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-}
-function currentData() {
-  const data = {};
-  for (const f of FIELDS) data[f] = getVal(f);
-  return data;
-}
-function applyData(data) {
-  for (const f of FIELDS) {
-    if (f in data) setVal(f, data[f]);
+/* ============================================================
+   決算報告書 Parser
+   ============================================================ */
+function parseKessan(text) {
+  const bs = [], pl = [], plDetail = [];
+  const lines = text.split('\n');
+  let section = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const line = raw.trim();
+    if (!line) continue;
+
+    if (/資産の部/.test(line) && !/負債/.test(line)) { section = 'bs'; continue; }
+    if (/損\s*益\s*計\s*算\s*書/.test(line)) { section = 'pl'; continue; }
+    if (/販売費及び一般管理費内訳/.test(line)) { section = 'plDetail'; continue; }
+    if (/株\s*主\s*資\s*本\s*等\s*変\s*動/.test(line)) { section = ''; continue; }
+    if (/個\s*別\s*注\s*記\s*表/.test(line)) { section = ''; continue; }
+
+    const numMatch = line.match(/(-?[\d,]+)\s*$/);
+    if (!numMatch) continue;
+    const amount = parseNum(numMatch[1]);
+    let name = line.slice(0, numMatch.index).trim();
+    name = cleanName(name);
+    if (!name || /^[\d,\-]+$/.test(name) || /^（/.test(name)) continue;
+
+    if (section === 'bs') bs.push({ name, amount });
+    else if (section === 'pl') pl.push({ name, amount });
+    else if (section === 'plDetail') plDetail.push({ name, amount });
   }
-}
-function saveDraft() {
-  const company = (getVal('meta_company') || '').trim();
-  if (!company) { toast('⚠️ 法人名を入力してください'); return; }
-  const period = (getVal('meta_period_to') || '').trim();
-  const name = period ? `${company}（${period}）` : company;
-  const drafts = getDrafts();
-  drafts[name] = { ...currentData(), _saved: new Date().toISOString() };
-  setDrafts(drafts);
-  refreshDraftList(name);
-  toast('💾 保存しました');
-}
-function loadDraft(name) {
-  if (!name) return;
-  const d = getDrafts()[name];
-  if (!d) return;
-  applyData(d);
-  document.getElementById('check-results').innerHTML = '';
-  toast('📂 読み込みました');
-}
-function deleteDraft() {
-  const sel = document.getElementById('draft-select');
-  const name = sel.value;
-  if (!name) { toast('⚠️ 削除する案件を選択してください'); return; }
-  if (!confirm(`「${name}」を削除しますか？`)) return;
-  const drafts = getDrafts();
-  delete drafts[name];
-  setDrafts(drafts);
-  refreshDraftList();
-  toast('🗑 削除しました');
-}
-function newDraft() {
-  if (!confirm('入力内容をクリアして新規作成しますか？')) return;
-  for (const f of FIELDS) setVal(f, '');
-  document.getElementById('check-results').innerHTML = '';
-  document.getElementById('csv-status').textContent = '未読込';
-  document.getElementById('csv-status').className = 'upload-status';
-  document.getElementById('pdf-status').textContent = '未読込';
-  document.getElementById('pdf-status').className = 'upload-status';
-  document.getElementById('pdf-text').classList.remove('show');
-  document.getElementById('draft-select').value = '';
-  toast('＋ 新規作成');
-}
-function refreshDraftList(selectName) {
-  const sel = document.getElementById('draft-select');
-  const drafts = getDrafts();
-  const names = Object.keys(drafts).sort();
-  sel.innerHTML = '<option value="">― 選択してください ―</option>' +
-    names.map(n => `<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
-  if (selectName) sel.value = selectName;
+
+  return { bs, pl, plDetail };
 }
 
 /* ============================================================
-   初期化
+   科目内訳書 Parser
    ============================================================ */
-window.addEventListener('DOMContentLoaded', () => {
-  refreshDraftList();
-});
+function parseUchiwake(text) {
+  const items = [];
+  const lines = text.split('\n');
+  let currentForm = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    const formMatch = line.match(/(売掛金|未収入金|仮払金|前渡金|棚卸資産|買掛金|未払金|未払費用|未払法人税|借入金|地代家賃|役員給与|工業所有権|貸付金|仮受金|源泉)/);
+    if (formMatch && /内訳/.test(line)) {
+      currentForm = cleanName(formMatch[0]);
+    }
+
+    if (/人\s*件\s*費\s*の\s*内\s*訳/.test(line)) currentForm = '人件費';
+
+    const totalMatch = line.match(/(?:小?\s*計|合\s*計)\s+(-?[\d,]+)/);
+    if (totalMatch && currentForm) {
+      const amount = parseNum(totalMatch[1]);
+      items.push({ form: currentForm, name: currentForm, amount, type: 'total' });
+    }
+
+    if (currentForm === '役員給与' || currentForm === '人件費') {
+      const numMatch = line.match(/(-?[\d,]+)\s*$/);
+      if (numMatch) {
+        const amount = parseNum(numMatch[1]);
+        const name = cleanName(line.slice(0, numMatch.index));
+        if (/役員給与計|役員給与/.test(name) && amount > 0) {
+          items.push({ form: '役員給与', name: '役員給与計', amount, type: 'detail' });
+        }
+        if (/給与手当/.test(name) && amount > 0) {
+          items.push({ form: '人件費', name: '給与手当', amount, type: 'detail' });
+        }
+      }
+    }
+
+    if (currentForm && /計\s/.test(line)) {
+      const parts = line.match(/([^\d]*?)\s+(-?[\d,]+)/);
+      if (parts) {
+        const lbl = cleanName(parts[1]);
+        if (/^計$/.test(lbl) || /^小計$/.test(lbl)) {
+          // already handled
+        }
+      }
+    }
+  }
+
+  const dedup = [];
+  const seen = new Set();
+  for (const item of items) {
+    const key = item.form + ':' + item.name + ':' + item.amount;
+    if (!seen.has(key)) { seen.add(key); dedup.push(item); }
+  }
+  return dedup;
+}
+
+/* ============================================================
+   総勘定元帳 Parser
+   ============================================================ */
+function parseMotochou(text) {
+  const accounts = {};
+  const lines = text.split('\n');
+  let currentAccount = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    const headerMatch = line.match(/令和\s*\d+年度\s+(.+?)\s+\d+\s*頁/);
+    if (headerMatch) {
+      currentAccount = cleanName(headerMatch[1]);
+      if (!accounts[currentAccount]) {
+        accounts[currentAccount] = { debit: 0, credit: 0 };
+      }
+      continue;
+    }
+
+    if (currentAccount && /当期累計/.test(line)) {
+      const nums = line.match(/当期累計\s+([\d,]+)\s+([\d,]+)/);
+      if (nums) {
+        accounts[currentAccount].debit = parseNum(nums[1]);
+        accounts[currentAccount].credit = parseNum(nums[2]);
+      }
+    }
+  }
+
+  return accounts;
+}
+
+/* ============================================================
+   Render Parsed Data
+   ============================================================ */
+function renderParsed() {
+  const area = document.getElementById('parsed-area');
+  let html = '';
+
+  if (state.kessan) {
+    html += '<div class="section-title">② 抽出結果：決算報告書</div>';
+    html += '<button class="toggle-btn" onclick="toggleTable(\'tbl-bs\')">▼ 貸借対照表</button>';
+    html += buildTable('tbl-bs', ['科目', '金額'], state.kessan.bs.map(r => [
+      '<span class="source-tag tag-bs">B/S</span>' + esc(r.name), fmt(r.amount)
+    ]));
+    html += '<button class="toggle-btn" onclick="toggleTable(\'tbl-pl\')">▼ 損益計算書</button>';
+    html += buildTable('tbl-pl', ['科目', '金額'], state.kessan.pl.map(r => [
+      '<span class="source-tag tag-pl">P/L</span>' + esc(r.name), fmt(r.amount)
+    ]));
+    if (state.kessan.plDetail.length) {
+      html += '<button class="toggle-btn" onclick="toggleTable(\'tbl-pld\')">▼ 販管費内訳</button>';
+      html += buildTable('tbl-pld', ['科目', '金額'], state.kessan.plDetail.map(r => [
+        '<span class="source-tag tag-pl">販管</span>' + esc(r.name), fmt(r.amount)
+      ]));
+    }
+  }
+
+  if (state.uchiwake) {
+    html += '<div class="section-title">② 抽出結果：科目内訳書</div>';
+    html += buildTable('tbl-uchi', ['内訳書', '科目', '金額'], state.uchiwake.map(r => [
+      '<span class="source-tag tag-detail">内訳</span>' + esc(r.form),
+      esc(r.name), fmt(r.amount)
+    ]));
+  }
+
+  if (state.motochou) {
+    html += '<div class="section-title">② 抽出結果：総勘定元帳</div>';
+    html += '<button class="toggle-btn" onclick="toggleTable(\'tbl-moto\')">▼ 科目別 当期累計</button>';
+    const rows = Object.entries(state.motochou).map(([name, v]) => [
+      '<span class="source-tag tag-ledger">元帳</span>' + esc(name),
+      fmt(v.debit), fmt(v.credit), fmt(v.debit - v.credit)
+    ]);
+    html += buildTable('tbl-moto', ['科目', '借方累計', '貸方累計', '差引'], rows);
+  }
+
+  area.innerHTML = html;
+}
+
+function buildTable(id, headers, rows) {
+  let h = `<table class="parsed-table" id="${id}"><thead><tr>`;
+  for (const th of headers) h += `<th>${th}</th>`;
+  h += '</tr></thead><tbody>';
+  for (const row of rows) {
+    h += '<tr>';
+    for (let i = 0; i < row.length; i++) {
+      const cls = (i > 0) ? ' class="num"' : '';
+      h += `<td${cls}>${row[i]}</td>`;
+    }
+    h += '</tr>';
+  }
+  h += '</tbody></table>';
+  return h;
+}
+
+function toggleTable(id) {
+  const tbl = document.getElementById(id);
+  if (tbl) tbl.style.display = tbl.style.display === 'none' ? '' : 'none';
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+/* ============================================================
+   Cross-Check Engine
+   ============================================================ */
+function runChecks() {
+  const checks = [];
+
+  // Helper: find BS item by partial name match
+  function findBS(keyword) {
+    if (!state.kessan) return null;
+    return state.kessan.bs.find(r => r.name.includes(keyword));
+  }
+  function findPL(keyword) {
+    if (!state.kessan) return null;
+    return state.kessan.pl.find(r => r.name.includes(keyword));
+  }
+  function findPLD(keyword) {
+    if (!state.kessan) return null;
+    return state.kessan.plDetail.find(r => r.name.includes(keyword));
+  }
+  function findUchi(keyword) {
+    if (!state.uchiwake) return null;
+    return state.uchiwake.find(r => r.name.includes(keyword) && r.type === 'total');
+  }
+  function findLedger(keyword) {
+    if (!state.motochou) return null;
+    for (const [name, v] of Object.entries(state.motochou)) {
+      if (name.includes(keyword)) return { name, ...v };
+    }
+    return null;
+  }
+
+  // ========================================
+  // A: 決算報告書 内部整合
+  // ========================================
+  if (state.kessan) {
+    // A1: 流動資産合計の検算
+    const bsItems = state.kessan.bs;
+    checkSubtotal(checks, 'A. 決算報告書 内部整合', bsItems,
+      '流動資産合計', ['売掛金', '預け金'],
+      '流動資産の科目合計が流動資産合計と一致するか');
+
+    // A2: B/S 資産合計 = 負債純資産合計
+    const assetTotal = findBS('資産の部合計');
+    const liabEquity = findBS('負債及び純資産合計');
+    if (assetTotal && liabEquity) {
+      checks.push({
+        cat: 'A. 決算報告書 内部整合',
+        title: '資産合計 = 負債及び純資産合計（貸借一致）',
+        items: [
+          { label: '資産の部合計', amount: assetTotal.amount },
+          { label: '負債及び純資産合計', amount: liabEquity.amount },
+        ],
+        ok: assetTotal.amount === liabEquity.amount,
+      });
+    }
+
+    // A3: P/L 販管費合計 = 内訳合計
+    if (state.kessan.plDetail.length) {
+      const plTotal = state.kessan.plDetail.find(r => r.name.includes('販売費及び一般管理費合計'));
+      if (plTotal) {
+        const detailSum = state.kessan.plDetail
+          .filter(r => !r.name.includes('合計'))
+          .reduce((s, r) => s + r.amount, 0);
+        checks.push({
+          cat: 'A. 決算報告書 内部整合',
+          title: '販管費内訳合計 = 販管費合計',
+          items: [
+            { label: '内訳項目の合計', amount: detailSum },
+            { label: '販売費及び一般管理費合計', amount: plTotal.amount },
+          ],
+          ok: detailSum === plTotal.amount,
+        });
+      }
+    }
+  }
+
+  // ========================================
+  // B: 決算報告書 ↔ 科目内訳書
+  // ========================================
+  if (state.kessan && state.uchiwake) {
+    const mappings = [
+      { bsKey: '売掛金', uchiKey: '売掛金' },
+      { bsKey: '未払法人税', uchiKey: '未払法人税' },
+      { bsKey: '短期借入金', uchiKey: '借入金' },
+      { bsKey: '借入金', uchiKey: '借入金' },
+    ];
+    for (const m of mappings) {
+      const bsItem = findBS(m.bsKey);
+      const uchiItem = findUchi(m.uchiKey);
+      if (bsItem && uchiItem) {
+        checks.push({
+          cat: 'B. 決算報告書 ↔ 科目内訳書',
+          title: `${bsItem.name}（B/S）= ${uchiItem.form}内訳書 合計`,
+          items: [
+            { label: 'B/S ' + bsItem.name, amount: bsItem.amount },
+            { label: '科目内訳書 計', amount: uchiItem.amount },
+          ],
+          ok: bsItem.amount === uchiItem.amount,
+        });
+      }
+    }
+    // 役員報酬 vs 役員給与内訳
+    const yakuinPL = findPLD('役員報酬') || findPL('役員報酬');
+    const yakuinUchi = state.uchiwake.find(r => r.name === '役員給与計' || (r.form === '役員給与' && r.type === 'detail'));
+    if (yakuinPL && yakuinUchi) {
+      checks.push({
+        cat: 'B. 決算報告書 ↔ 科目内訳書',
+        title: '役員報酬（P/L）= 役員給与等の内訳書',
+        items: [
+          { label: 'P/L 役員報酬', amount: yakuinPL.amount },
+          { label: '内訳書 役員給与計', amount: yakuinUchi.amount },
+        ],
+        ok: yakuinPL.amount === yakuinUchi.amount,
+      });
+    }
+  }
+
+  // ========================================
+  // C: 決算報告書 ↔ 総勘定元帳 (P/L)
+  // ========================================
+  if (state.kessan && state.motochou) {
+    const plItems = state.kessan.plDetail.length ? state.kessan.plDetail : [];
+    const plMain = state.kessan.pl || [];
+
+    // P/L detailed items vs ledger
+    const plNameMap = {
+      '役員報酬': '役員報酬', '福利厚生費': '福利厚生費', '荷造運賃': '荷造運賃',
+      '接待交際費': '交際費', '交際費': '交際費', '会議費': '会議費',
+      '旅費交通費': '旅費交通費', '通信費': '通信費', '消耗品費': '消耗品費',
+      '事務用消耗品費': '事務用品費', '事務用品費': '事務用品費',
+      '水道光熱費': '水道光熱費', '新聞図書費': '新聞図書費', '諸会費': '諸会費',
+      '支払手数料': '支払手数料', '車両費': '車両費', '地代家賃': '地代家賃',
+      '保険料': '保険料', '租税公課': '租税公課', '支払報酬料': '支払報酬料',
+      '減価償却費': '減価償却費', '長期前払費用償却': '長期前払費用償却', '雑費': '雑費',
+    };
+
+    const detailChecks = [];
+    const sourceItems = plItems.filter(r => !r.name.includes('合計'));
+    for (const item of sourceItems) {
+      const ledgerName = plNameMap[item.name] || item.name;
+      const ledger = findLedger(ledgerName);
+      if (ledger) {
+        const ledgerNet = ledger.debit - ledger.credit;
+        detailChecks.push({
+          name: item.name,
+          kessan: item.amount,
+          ledger: ledgerNet,
+          ledgerName: ledger.name,
+          ok: item.amount === ledgerNet,
+        });
+      }
+    }
+
+    if (detailChecks.length) {
+      const allOk = detailChecks.every(d => d.ok);
+      checks.push({
+        cat: 'C. 決算報告書 ↔ 総勘定元帳（販管費）',
+        title: `販管費${detailChecks.length}科目の照合（${detailChecks.filter(d=>d.ok).length}/${detailChecks.length} 一致）`,
+        table: {
+          headers: ['科目', '決算報告書', '総勘定元帳', '差額'],
+          rows: detailChecks.map(d => ({
+            cells: [d.name, fmt(d.kessan), fmt(d.ledger), fmt(d.kessan - d.ledger)],
+            ok: d.ok,
+          })),
+        },
+        ok: allOk,
+      });
+    }
+
+    // 売上高
+    const uriagePL = findPL('売上高合計') || findPL('売上高');
+    const uriageLedger = findLedger('売上高');
+    if (uriagePL && uriageLedger) {
+      checks.push({
+        cat: 'C. 決算報告書 ↔ 総勘定元帳（売上）',
+        title: '売上高（P/L）= 総勘定元帳',
+        items: [
+          { label: 'P/L 売上高', amount: uriagePL.amount },
+          { label: '元帳 売上高（貸方累計）', amount: uriageLedger.credit },
+        ],
+        ok: uriagePL.amount === uriageLedger.credit,
+      });
+    }
+
+    // 法人税等
+    const taxPL = findPL('法人税、住民税及び事業税') || findPL('法人税');
+    const taxLedger = findLedger('法人税');
+    if (taxPL && taxLedger) {
+      const taxNet = taxLedger.debit - taxLedger.credit;
+      checks.push({
+        cat: 'C. 決算報告書 ↔ 総勘定元帳（法人税等）',
+        title: '法人税、住民税及び事業税（P/L）= 総勘定元帳',
+        items: [
+          { label: 'P/L 法人税等', amount: taxPL.amount },
+          { label: '元帳 法人税等（借方累計）', amount: taxNet },
+        ],
+        ok: taxPL.amount === taxNet,
+      });
+    }
+  }
+
+  // ========================================
+  // D: 決算報告書(B/S) ↔ 総勘定元帳
+  // ========================================
+  if (state.kessan && state.motochou) {
+    const bsNameMap = {
+      '売掛金': '売掛金', '預け金': '預け金',
+      '車両運搬具': '車両運搬具', '長期前払費用': '長期前払費用',
+      '短期借入金': '短期借入金', '未払法人税等': '未払法人税等',
+    };
+    const bsChecks = [];
+    for (const item of state.kessan.bs) {
+      if (item.name.includes('合計')) continue;
+      const ledgerName = bsNameMap[item.name] || item.name;
+      const ledger = findLedger(ledgerName);
+      if (ledger) {
+        const net = ledger.debit - ledger.credit;
+        const absNet = Math.abs(net);
+        const ok = item.amount === absNet || item.amount === net;
+        bsChecks.push({ name: item.name, kessan: item.amount, ledgerNet: net, ok });
+      }
+    }
+    if (bsChecks.length) {
+      const allOk = bsChecks.every(d => d.ok);
+      checks.push({
+        cat: 'D. 決算報告書(B/S) ↔ 総勘定元帳',
+        title: `B/S ${bsChecks.length}科目の照合（${bsChecks.filter(d=>d.ok).length}/${bsChecks.length} 一致）`,
+        table: {
+          headers: ['科目', 'B/S金額', '元帳差引残高', '差額'],
+          rows: bsChecks.map(d => ({
+            cells: [d.name, fmt(d.kessan), fmt(d.ledgerNet), fmt(d.kessan - Math.abs(d.ledgerNet))],
+            ok: d.ok,
+          })),
+        },
+        ok: allOk,
+      });
+    }
+  }
+
+  // ========================================
+  // E: 科目内訳書 ↔ 総勘定元帳
+  // ========================================
+  if (state.uchiwake && state.motochou) {
+    const uchiMap = {
+      '売掛金': '売掛金', '未払法人税': '未払法人税等',
+      '借入金': '短期借入金',
+    };
+    for (const item of state.uchiwake.filter(r => r.type === 'total')) {
+      const ledgerName = uchiMap[item.form] || item.form;
+      const ledger = findLedger(ledgerName);
+      if (ledger) {
+        const net = Math.abs(ledger.debit - ledger.credit);
+        const ok = item.amount === net;
+        checks.push({
+          cat: 'E. 科目内訳書 ↔ 総勘定元帳',
+          title: `${item.form}内訳書 合計 = 元帳 ${ledgerName}`,
+          items: [
+            { label: '内訳書 合計', amount: item.amount },
+            { label: '元帳 残高', amount: net },
+          ],
+          ok,
+        });
+      }
+    }
+  }
+
+  renderResults(checks);
+}
+
+/* ============================================================
+   B/S subtotal check helper
+   ============================================================ */
+function checkSubtotal(checks, cat, bsItems, totalKey, componentKeys, desc) {
+  const total = bsItems.find(r => r.name.includes(totalKey));
+  if (!total) return;
+  const components = bsItems.filter(r =>
+    componentKeys.some(k => r.name.includes(k)) && !r.name.includes('合計')
+  );
+  if (!components.length) return;
+  const sum = components.reduce((s, r) => s + r.amount, 0);
+  checks.push({
+    cat,
+    title: `${totalKey} = 各科目の合計`,
+    items: [
+      ...components.map(c => ({ label: c.name, amount: c.amount })),
+      { label: totalKey, amount: total.amount },
+      { label: '各科目合計', amount: sum },
+    ],
+    ok: sum === total.amount,
+  });
+}
+
+/* ============================================================
+   Render Results
+   ============================================================ */
+function renderResults(checks) {
+  const wrap = document.getElementById('check-results');
+  if (!checks.length) {
+    wrap.innerHTML = '<div class="loading">チェック項目がありません。PDFを2つ以上アップロードしてください。</div>';
+    return;
+  }
+
+  const okCount = checks.filter(c => c.ok).length;
+  const ngCount = checks.length - okCount;
+
+  let html = '<div class="section-title">③ チェック結果</div>';
+  html += '<div class="result-summary">';
+  html += `<div class="result-summary-main">全${checks.length}件：✅ ${okCount}件 一致　❌ ${ngCount}件 不一致</div>`;
+  html += ngCount > 0
+    ? `<div class="result-pill ng">❌ ${ngCount}件 要確認</div>`
+    : '<div class="result-pill ok">✅ すべて一致</div>';
+  html += '</div>';
+
+  const cats = [...new Set(checks.map(c => c.cat))];
+  for (const cat of cats) {
+    html += `<div class="result-category">${esc(cat)}</div>`;
+    for (const c of checks.filter(x => x.cat === cat)) {
+      const cls = c.ok ? 'ok' : 'ng';
+      html += `<div class="check-item ${cls}">`;
+      html += `<div class="check-mark ${cls}">${c.ok ? '✓' : '✗'}</div>`;
+      html += '<div>';
+      html += `<div class="check-title">${esc(c.title)}</div>`;
+
+      if (c.items) {
+        html += '<div class="check-detail">';
+        for (const item of c.items) {
+          const diff = c.items.length === 2 && item === c.items[1]
+            ? c.items[0].amount - c.items[1].amount : null;
+          html += `${esc(item.label)}: <strong>${fmt(item.amount)}</strong>`;
+          if (diff !== null && diff !== 0) html += ` <span class="diff">（差額: ${fmt(diff)}）</span>`;
+          else if (diff === 0) html += ' <span class="match">✓</span>';
+          html += '<br>';
+        }
+        html += '</div>';
+      }
+
+      if (c.table) {
+        html += '<table class="check-sub-table"><thead><tr>';
+        for (const h of c.table.headers) html += `<th>${esc(h)}</th>`;
+        html += '</tr></thead><tbody>';
+        for (const row of c.table.rows) {
+          html += row.ok ? '<tr>' : '<tr class="mismatch">';
+          for (let i = 0; i < row.cells.length; i++) {
+            html += i > 0 ? `<td class="num">${esc(String(row.cells[i]))}</td>` : `<td>${esc(row.cells[i])}</td>`;
+          }
+          html += '</tr>';
+        }
+        html += '</tbody></table>';
+      }
+
+      html += '</div></div>';
+    }
+  }
+
+  wrap.innerHTML = html;
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 </script>
-
 </body>
 </html>
