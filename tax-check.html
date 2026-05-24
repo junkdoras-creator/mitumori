@@ -102,7 +102,7 @@ body { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif; backg
     <div class="guide-banner">
       <strong>📋 使い方</strong>
       <div class="guide-steps">
-        <div class="guide-step"><span>①</span>3つのPDFをアップロード</div>
+        <div class="guide-step"><span>①</span>PDFをアップロード（自動判別）</div>
         <div class="guide-step"><span>②</span>抽出結果を確認</div>
         <div class="guide-step"><span>③</span>▶ チェック実行</div>
         <div class="guide-step"><span>④</span>差異を確認</div>
@@ -111,24 +111,34 @@ body { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif; backg
     </div>
 
     <div class="section-title">① PDFアップロード</div>
+    <div class="upload-box" id="drop-auto" style="margin-bottom:12px;"
+         onclick="document.getElementById('auto-input').click()"
+         ondragover="event.preventDefault();this.classList.add('dragover')"
+         ondragleave="this.classList.remove('dragover')"
+         ondrop="handleAutoDrop(event)">
+      <input type="file" id="auto-input" accept="application/pdf" multiple onchange="handleAutoFiles(event)" style="display:none">
+      <div class="icon">📂</div>
+      <div class="label">PDFをまとめてアップロード（自動判別）</div>
+      <div class="status" id="status-auto">クリックまたはドラッグ＆ドロップ（複数可）</div>
+    </div>
     <div class="upload-grid">
       <div class="upload-box" id="drop-kessan" onclick="this.querySelector('input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'kessan')">
         <input type="file" accept="application/pdf" onchange="handleFile(event,'kessan')">
         <div class="icon">📊</div>
         <div class="label">決算報告書</div>
-        <div class="status" id="status-kessan">クリック or ドラッグ</div>
+        <div class="status" id="status-kessan">未読込</div>
       </div>
       <div class="upload-box" id="drop-uchiwake" onclick="this.querySelector('input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'uchiwake')">
         <input type="file" accept="application/pdf" onchange="handleFile(event,'uchiwake')">
         <div class="icon">📑</div>
         <div class="label">科目内訳書</div>
-        <div class="status" id="status-uchiwake">クリック or ドラッグ</div>
+        <div class="status" id="status-uchiwake">未読込</div>
       </div>
       <div class="upload-box" id="drop-motochou" onclick="this.querySelector('input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'motochou')">
         <input type="file" accept="application/pdf" onchange="handleFile(event,'motochou')">
         <div class="icon">📒</div>
         <div class="label">総勘定元帳</div>
-        <div class="status" id="status-motochou">クリック or ドラッグ</div>
+        <div class="status" id="status-motochou">未読込</div>
       </div>
     </div>
 
@@ -210,6 +220,121 @@ function handleFile(e, type) {
   if (file) processFile(file, type);
 }
 
+function handleAutoDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const files = [...e.dataTransfer.files].filter(f => f.type === 'application/pdf');
+  if (files.length) processAutoFiles(files);
+}
+function handleAutoFiles(e) {
+  const files = [...e.target.files].filter(f => f.type === 'application/pdf');
+  if (files.length) processAutoFiles(files);
+  e.target.value = '';
+}
+
+function detectPdfType(text) {
+  const stripped = text.replace(/[\s　]+/g, '');
+  const scores = { kessan: 0, uchiwake: 0, motochou: 0 };
+
+  if (stripped.includes('貸借対照表')) scores.kessan += 10;
+  if (stripped.includes('損益計算書')) scores.kessan += 10;
+  if (stripped.includes('決算報告書')) scores.kessan += 8;
+  if (stripped.includes('販売費及び一般管理費')) scores.kessan += 6;
+  if (stripped.includes('純資産の部')) scores.kessan += 5;
+  if (stripped.includes('資産の部合計')) scores.kessan += 5;
+  if (stripped.includes('経常損失') || stripped.includes('経常利益')) scores.kessan += 4;
+
+  if (stripped.includes('内訳明細書')) scores.uchiwake += 10;
+  if (stripped.includes('勘定科目内訳')) scores.uchiwake += 10;
+  if (stripped.includes('の内訳書')) scores.uchiwake += 8;
+  if (stripped.includes('期末現在高')) scores.uchiwake += 6;
+  if (stripped.includes('人件費の内訳')) scores.uchiwake += 5;
+  if (stripped.includes('役員給与等')) scores.uchiwake += 4;
+  if (stripped.includes('地代家賃等')) scores.uchiwake += 4;
+
+  if (stripped.includes('総勘定元帳')) scores.motochou += 10;
+  if (stripped.includes('前月より繰越')) scores.motochou += 8;
+  if (stripped.includes('前頁より繰越')) scores.motochou += 8;
+  if (stripped.includes('月度合計')) scores.motochou += 8;
+  if (stripped.includes('当期累計')) scores.motochou += 6;
+  if (stripped.includes('伝票No') || stripped.includes('伝票Ｎｏ')) scores.motochou += 5;
+  if (stripped.includes('相手勘定科目')) scores.motochou += 5;
+  if (stripped.includes('借方金額') && stripped.includes('貸方金額')) scores.motochou += 5;
+
+  const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+  return { type: best[0], score: best[1], scores };
+}
+
+async function processAutoFiles(files) {
+  const autoStatus = document.getElementById('status-auto');
+  autoStatus.textContent = `⏳ ${files.length} ファイルを解析中...`;
+  document.getElementById('drop-auto').classList.remove('loaded');
+
+  const results = [];
+  for (const file of files) {
+    try {
+      const pages = await extractText(file);
+      const text = pageLinesToText(pages);
+      const detection = detectPdfType(text);
+      results.push({ file, pages, text, detection });
+    } catch (err) {
+      results.push({ file, error: err.message });
+    }
+  }
+
+  const assigned = {};
+  const sorted = results
+    .filter(r => !r.error)
+    .sort((a, b) => b.detection.score - a.detection.score);
+
+  for (const r of sorted) {
+    const type = r.detection.type;
+    if (!assigned[type]) {
+      assigned[type] = r;
+    } else {
+      const otherTypes = ['kessan', 'uchiwake', 'motochou'].filter(t => !assigned[t]);
+      const altScores = otherTypes.map(t => ({ t, s: r.detection.scores[t] })).sort((a, b) => b.s - a.s);
+      if (altScores.length && altScores[0].s > 0) {
+        assigned[altScores[0].t] = r;
+      }
+    }
+  }
+
+  const typeLabels = { kessan: '決算報告書', uchiwake: '科目内訳書', motochou: '総勘定元帳' };
+  const msgs = [];
+
+  for (const [type, r] of Object.entries(assigned)) {
+    try {
+      let parsed;
+      if (type === 'kessan') parsed = parseKessan(r.text, r.pages);
+      else if (type === 'uchiwake') parsed = parseUchiwake(r.text, r.pages);
+      else parsed = parseMotochou(r.text, r.pages);
+      state[type] = parsed;
+      const box = document.getElementById('drop-' + type);
+      const status = document.getElementById('status-' + type);
+      status.textContent = `✅ ${r.file.name}（自動判別）`;
+      box.classList.add('loaded');
+      msgs.push(`${typeLabels[type]}: ${r.file.name}`);
+    } catch (err) {
+      msgs.push(`${typeLabels[type]}: ❌ ${err.message}`);
+    }
+  }
+
+  for (const r of results.filter(r => r.error)) {
+    msgs.push(`❌ ${r.file.name}: ${r.error}`);
+  }
+
+  const unassigned = results.filter(r => !r.error && !Object.values(assigned).includes(r));
+  for (const r of unassigned) {
+    msgs.push(`⚠️ ${r.file.name}: 種類を判別できませんでした`);
+  }
+
+  autoStatus.textContent = `✅ ${msgs.join(' ／ ')}`;
+  document.getElementById('drop-auto').classList.add('loaded');
+  renderParsed();
+  updateRunBtn();
+}
+
 async function processFile(file, type) {
   const box = document.getElementById('drop-' + type);
   const status = document.getElementById('status-' + type);
@@ -236,8 +361,8 @@ async function processFile(file, type) {
 function updateRunBtn() {
   const btn = document.getElementById('run-btn');
   const count = [state.kessan, state.uchiwake, state.motochou].filter(Boolean).length;
-  btn.disabled = count < 2;
-  btn.textContent = count < 2 ? `▶ チェック実行（${count}/3 読込済）` : '▶ チェック実行';
+  btn.disabled = count < 1;
+  btn.textContent = count < 1 ? '▶ チェック実行（PDFを読込んでください）' : `▶ チェック実行（${count}/3 読込済）`;
 }
 
 /* ============================================================
