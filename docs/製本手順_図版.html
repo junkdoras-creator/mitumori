@@ -44,15 +44,22 @@
   .page-visual { position:relative; width:74px; height:96px; background:#fff; border:1.5px solid #9aa7bd; border-radius:3px; flex-shrink:0; box-shadow:2px 2px 0 #e4e9f1; }
   .page-visual.blue { background:#e3f0ff; border-color:#6fa8e8; }
   .page-visual .lbl { position:absolute; bottom:5px; left:0; right:0; text-align:center; font-size:9px; color:#9aa7bd; }
-  .staple { position:absolute; width:13px; height:4px; background:#c62828; border-radius:1px; transform:rotate(-45deg); box-shadow:0 0 0 1px #fff; }
-  .staple.tl { top:9px; left:6px; }
-  .staple.bl { bottom:9px; left:6px; }
+  .staple { position:absolute; width:14px; height:4px; background:#c62828; border-radius:1px; box-shadow:0 0 0 1px #fff; }
+  /* 左上 一個留：横まっすぐ */
+  .staple.h-tl { top:9px; left:7px; }
+  /* 二個留：左辺に縦向きで上下2つ並ぶ */
+  .staple.v-top { top:18px; left:1px; transform:rotate(90deg); }
+  .staple.v-bot { bottom:18px; left:1px; transform:rotate(90deg); }
   .none-mark { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:10px; color:#2e7d32; font-weight:700; }
 
   .note { margin-top:16px; background:#fff7e0; border:1px solid #e6c34d; border-radius:8px; padding:11px 14px; font-size:12px; line-height:1.9; color:#5d4b1f; }
   .note b { color:#1a3a6b; }
   .legend { margin-top:12px; display:flex; gap:18px; flex-wrap:wrap; font-size:11px; color:#555; align-items:center; }
   .legend .mini { position:relative; display:inline-block; width:26px; height:34px; border:1.5px solid #9aa7bd; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  .legend .mini .staple { width:11px; height:3px; }
+  .legend .mini .v-top { top:6px; left:-1px; }
+  .legend .mini .v-bot { bottom:6px; left:-1px; }
+  .legend .mini .h-tl { top:5px; left:4px; }
 
   @media (max-width:640px){ .bundles{ grid-template-columns:1fr; } }
   @media print {
@@ -101,8 +108,8 @@
           <li><span class="seq">6</span>法人税メール詳細 <span class="tag-mail">（所長報告チャット＋メール詳細）</span></li>
         </ul>
         <div class="page-visual">
-          <span class="staple tl"></span>
-          <span class="staple bl"></span>
+          <span class="staple v-top"></span>
+          <span class="staple v-bot"></span>
           <span class="lbl">二個留</span>
         </div>
       </div>
@@ -138,7 +145,7 @@
           <li><span class="seq">2</span>消費税メール詳細</li>
         </ul>
         <div class="page-visual">
-          <span class="staple tl"></span>
+          <span class="staple h-tl"></span>
           <span class="lbl">左上 一個</span>
         </div>
       </div>
@@ -157,7 +164,7 @@
           <li><span class="seq">2</span>地方税メール詳細（都道府県分）</li>
         </ul>
         <div class="page-visual">
-          <span class="staple tl"></span>
+          <span class="staple h-tl"></span>
           <span class="lbl">左上 一個</span>
         </div>
       </div>
@@ -176,7 +183,7 @@
           <li><span class="seq">2</span>地方税メール詳細（市町村分）</li>
         </ul>
         <div class="page-visual">
-          <span class="staple tl"></span>
+          <span class="staple h-tl"></span>
           <span class="lbl">左上 一個</span>
         </div>
       </div>
@@ -202,8 +209,8 @@
   </div>
 
   <div class="legend">
-    <span><span class="mini"><span class="staple tl"></span><span class="staple bl"></span></span>二個留（左辺 上下）</span>
-    <span><span class="mini"><span class="staple tl"></span></span>左上 一個留</span>
+    <span><span class="mini"><span class="staple v-top"></span><span class="staple v-bot"></span></span>二個留（左辺 縦に2つ）</span>
+    <span><span class="mini"><span class="staple h-tl"></span></span>左上 一個留（横まっすぐ）</span>
     <span><span class="mini"><span class="none-mark" style="font-size:8px;">なし</span></span>ホチキスなし</span>
     <span>🟥＝ホチキス位置</span>
   </div>
