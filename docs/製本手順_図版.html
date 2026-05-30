@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>製本手順（束・ホチキス・面）｜配布用</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Noto Sans JP','Hiragino Sans','Meiryo',sans-serif; background:#f0f4f9; color:#1a2436; padding:18px; }
+  .sheet { max-width: 980px; margin:0 auto; background:#fff; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,.08); padding:24px 26px 30px; }
+
+  .title { display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid #1a3a6b; padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+  .title h1 { font-size:20px; color:#1a3a6b; letter-spacing:1px; }
+  .title small { font-size:11px; color:#888; }
+
+  .rules { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .chip { background:#eef3fb; border:1px solid #cdd9ee; color:#1a3a6b; border-radius:18px; padding:5px 13px; font-size:12px; font-weight:700; }
+  .chip.blue { background:#e3f0ff; border-color:#9cc3f5; }
+  .chip.warn { background:#fff7e0; border-color:#e6c34d; color:#7a5b00; }
+
+  .flow { background:linear-gradient(135deg,#1a3a6b,#2a5298); color:#fff; border-radius:8px; padding:11px 14px; font-size:13px; font-weight:700; text-align:center; margin-bottom:18px; letter-spacing:.5px; }
+  .flow span { opacity:.7; margin:0 4px; }
+
+  .bundles { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .bundle { border:1px solid #d7e0ee; border-radius:10px; overflow:hidden; background:#fbfcfe; }
+  .bundle.full { grid-column:1 / -1; }
+  .b-head { display:flex; align-items:center; gap:10px; background:#eef3fb; padding:9px 12px; border-bottom:1px solid #d7e0ee; }
+  .b-no { background:#1a3a6b; color:#fff; font-weight:700; font-size:13px; border-radius:6px; padding:3px 10px; white-space:nowrap; }
+  .b-name { font-weight:700; font-size:14px; color:#1a3a6b; flex:1; }
+  .b-staple { font-size:11px; font-weight:700; padding:3px 9px; border-radius:14px; white-space:nowrap; }
+  .st2 { background:#fde8e8; color:#c62828; border:1px solid #f3b6b6; }
+  .st1 { background:#fff1d9; color:#9a6a00; border:1px solid #ecc98a; }
+  .st0 { background:#e7f3e8; color:#2e7d32; border:1px solid #b6dcb9; }
+
+  .b-body { display:flex; gap:12px; padding:12px; align-items:flex-start; }
+  .order { flex:1; }
+  .order li { list-style:none; display:flex; align-items:center; gap:8px; font-size:12.5px; padding:4px 0; border-bottom:1px dashed #e3e9f3; }
+  .order li:last-child { border-bottom:none; }
+  .order .seq { background:#dde7f6; color:#1a3a6b; font-weight:700; font-size:11px; min-width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .tag-blue { background:#cfe4ff; color:#0b4da2; font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; margin-left:4px; }
+  .tag-mail { color:#888; font-size:11px; }
+
+  /* ホチキス位置の図 */
+  .page-visual { position:relative; width:74px; height:96px; background:#fff; border:1.5px solid #9aa7bd; border-radius:3px; flex-shrink:0; box-shadow:2px 2px 0 #e4e9f1; }
+  .page-visual.blue { background:#e3f0ff; border-color:#6fa8e8; }
+  .page-visual .lbl { position:absolute; bottom:5px; left:0; right:0; text-align:center; font-size:9px; color:#9aa7bd; }
+  .staple { position:absolute; width:13px; height:4px; background:#c62828; border-radius:1px; transform:rotate(-45deg); box-shadow:0 0 0 1px #fff; }
+  .staple.tl { top:9px; left:6px; }
+  .staple.bl { bottom:9px; left:6px; }
+  .none-mark { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:10px; color:#2e7d32; font-weight:700; }
+
+  .note { margin-top:16px; background:#fff7e0; border:1px solid #e6c34d; border-radius:8px; padding:11px 14px; font-size:12px; line-height:1.9; color:#5d4b1f; }
+  .note b { color:#1a3a6b; }
+  .legend { margin-top:12px; display:flex; gap:18px; flex-wrap:wrap; font-size:11px; color:#555; align-items:center; }
+  .legend .mini { position:relative; display:inline-block; width:26px; height:34px; border:1.5px solid #9aa7bd; border-radius:2px; vertical-align:middle; margin-right:5px; }
+
+  @media (max-width:640px){ .bundles{ grid-template-columns:1fr; } }
+  @media print {
+    body { background:#fff; padding:0; }
+    .sheet { box-shadow:none; border-radius:0; max-width:100%; padding:10px 12px; }
+    @page { size:A4; margin:10mm; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="title">
+    <div>
+      <h1>製本手順（束・ホチキス・面）</h1>
+      <small>グロースリンク税理士法人 亀戸オフィス ／ 配布用</small>
+    </div>
+    <button onclick="window.print()" style="background:#1a3a6b;color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;">🖨 印刷 / PDF</button>
+  </div>
+
+  <div class="rules">
+    <span class="chip blue">📘 別表一は青紙</span>
+    <span class="chip">📄 概況書は片面印刷</span>
+    <span class="chip">🖨 印刷元＝所長報告チャットのデータ ＋ メール詳細に統一</span>
+  </div>
+
+  <div class="flow">
+    封入順　束①<span>→</span>束②<span>→</span>束③<span>→</span>束④<span>→</span>束⑤<span>→</span>納税額一覧
+  </div>
+
+  <div class="bundles">
+
+    <!-- 束① -->
+    <div class="bundle full">
+      <div class="b-head">
+        <span class="b-no">束①</span>
+        <span class="b-name">法人税 一式</span>
+        <span class="b-staple st2">ホチキス：二個留（左辺・上下）</span>
+      </div>
+      <div class="b-body">
+        <ul class="order">
+          <li><span class="seq">1</span>法人税申告書 <span class="tag-blue">別表一＝青紙</span></li>
+          <li><span class="seq">2</span>固定資産台帳</li>
+          <li><span class="seq">3</span>決算書</li>
+          <li><span class="seq">4</span>内訳書</li>
+          <li><span class="seq">5</span>税務代理権限証書 <span class="tag-blue" style="background:#fde3b0;color:#7a5b00;">※位置は要確認</span></li>
+          <li><span class="seq">6</span>法人税メール詳細 <span class="tag-mail">（所長報告チャット＋メール詳細）</span></li>
+        </ul>
+        <div class="page-visual">
+          <span class="staple tl"></span>
+          <span class="staple bl"></span>
+          <span class="lbl">二個留</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 束② -->
+    <div class="bundle">
+      <div class="b-head">
+        <span class="b-no">束②</span>
+        <span class="b-name">概況書</span>
+        <span class="b-staple st0">ホチキスなし</span>
+      </div>
+      <div class="b-body">
+        <ul class="order">
+          <li><span class="seq">1</span>概況書 <span class="tag-blue" style="background:#e7f3e8;color:#2e7d32;">片面印刷</span></li>
+        </ul>
+        <div class="page-visual">
+          <span class="none-mark">留めなし</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 束③ -->
+    <div class="bundle">
+      <div class="b-head">
+        <span class="b-no">束③</span>
+        <span class="b-name">消費税</span>
+        <span class="b-staple st1">ホチキス：左上 一個留</span>
+      </div>
+      <div class="b-body">
+        <ul class="order">
+          <li><span class="seq">1</span>消費税申告書</li>
+          <li><span class="seq">2</span>消費税メール詳細</li>
+        </ul>
+        <div class="page-visual">
+          <span class="staple tl"></span>
+          <span class="lbl">左上 一個</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 束④ -->
+    <div class="bundle">
+      <div class="b-head">
+        <span class="b-no">束④</span>
+        <span class="b-name">地方税：都道府県</span>
+        <span class="b-staple st1">ホチキス：左上 一個留</span>
+      </div>
+      <div class="b-body">
+        <ul class="order">
+          <li><span class="seq">1</span>都道府県税申告書</li>
+          <li><span class="seq">2</span>地方税メール詳細（都道府県分）</li>
+        </ul>
+        <div class="page-visual">
+          <span class="staple tl"></span>
+          <span class="lbl">左上 一個</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 束⑤ -->
+    <div class="bundle">
+      <div class="b-head">
+        <span class="b-no">束⑤</span>
+        <span class="b-name">地方税：市町村</span>
+        <span class="b-staple st1">ホチキス：左上 一個留</span>
+      </div>
+      <div class="b-body">
+        <ul class="order">
+          <li><span class="seq">1</span>市町村税申告書</li>
+          <li><span class="seq">2</span>地方税メール詳細（市町村分）</li>
+        </ul>
+        <div class="page-visual">
+          <span class="staple tl"></span>
+          <span class="lbl">左上 一個</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 納税額一覧 -->
+    <div class="bundle full">
+      <div class="b-head">
+        <span class="b-no">末尾</span>
+        <span class="b-name">納税額一覧表</span>
+        <span class="b-staple st0">留めなし・最後に添付</span>
+      </div>
+      <div class="b-body">
+        <ul class="order">
+          <li><span class="seq">1</span>納付税額一覧表</li>
+        </ul>
+        <div class="page-visual">
+          <span class="none-mark">留めなし</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="legend">
+    <span><span class="mini"><span class="staple tl"></span><span class="staple bl"></span></span>二個留（左辺 上下）</span>
+    <span><span class="mini"><span class="staple tl"></span></span>左上 一個留</span>
+    <span><span class="mini"><span class="none-mark" style="font-size:8px;">なし</span></span>ホチキスなし</span>
+    <span>🟥＝ホチキス位置</span>
+  </div>
+
+  <div class="note">
+    <b>⚠ 地方税が複数自治体・23区外の場合：</b>自治体ごとに束④（都道府県）・束⑤（市町村）をそれぞれ作る。申告先自治体はフォームの「申告先自治体（複数・23区外は必ず明記）」で確認。<br>
+    <b>⚠ 要確認ポイント：</b>束①の <b>税務代理権限証書の位置</b>（印刷順では概況書の後。本図では束①に含めて配置）／<b>地方税メール詳細</b>を都道府県・市町村で分けるか（本図は束ごとに添付する前提）。事務所で最終確定してください。<br>
+    <b>📌 郵送前の最終確認：</b>発送前に必ず一度、依頼者（担当者）に戻して確認する（誤発送防止）。
+  </div>
+</div>
+</body>
+</html>
